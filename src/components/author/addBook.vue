@@ -63,6 +63,7 @@
             <i class="zdy-icon__star"></i>
           </el-col>
         </el-form-item>
+
         <el-form-item label="发布状态：" prop="bookAuthorization">
           <el-col class="line" :span="6">
             <el-radio class="radio" type="number" :disabled="$route.name==='EditBook'" v-model="bookInfo.bookAuthorization" :label="0">网站首发</el-radio>
@@ -72,6 +73,7 @@
             <i class="zdy-icon__star"></i>
           </el-col>
         </el-form-item>
+
         <el-form-item label="连载状态：" v-if="$route.name==='EditBook'" prop="bookStatus">
           <el-col class="line" :span="6">
             <el-radio class="radio" type="number" v-model="bookInfo.bookStatus" :label="0">连载中</el-radio>
@@ -219,6 +221,7 @@
     methods: {
       addNewBook:function (formName) {
         this.$myLoad();
+        console.log(this)
         this.$refs[formName].validate((valid) => {
           if(valid){
             let formData = JSON.parse(JSON.stringify(this.bookInfo));

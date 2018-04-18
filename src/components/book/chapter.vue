@@ -29,7 +29,7 @@
                   </router-link>
                 </span>
                 <span>字数：{{chapterInfo.chapterLength}}</span>
-                <span>更新时间：{{ chapterInfo.createChapterTime | time('long')}}</span>
+                <span>更新时间：{{ chapterInfo.releaseTime | time('long')}}</span>
               </p>
             </div>
             <div class="read-bd" id="ChapterRead" :style="{fontSize:setData.size+'px',fontFamily:setData.family}">
@@ -377,7 +377,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
 //        获取章节信息
         getChapterInfo(id){
           FetchReadChapter({chapterId:id,readType:1}).then(json=>{
-            this.$store.commit("SET_BOOK_DETAIL",{data:json.data});
+            this.$store.commit("SET_BOOK_DETAIL",{data:json.data})
             if(json.data && json.returnCode!==1000){
               let desc = json.data.bookInfo.bookName + '是辣鸡小说网作者'+json.data.bookInfo.writerName+'全力打造的一部'+json.data.bookInfo.classificationName+'小说，辣鸡小说第一时间提供'+json.data.bookInfo.bookName+'最新章节，'+json.data.bookInfo.bookName+'全文阅读请上辣鸡小说';
     
@@ -461,7 +461,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
         getChapterList(){
             this.$store.dispatch('FETCH_CHAPTER_LIST',{ bid:this.chapterInfo.bookId,type:'read'})
         },
-//        计算上一章和下一章ID
+        // 计算上一章和下一章ID
         reckonPreNext(){
           let cid = this.$route.params.cid;
           let Arr = this.chapterList.newList;
@@ -489,7 +489,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             this.FormReply.content = this.$trim(this.FormReply.content).substr(0,50);
           }
         },
-//        发布间贴
+        // 发布间贴
         submitForm(index){
             FetchAddPrattle({
               pid:this.chapterInfo.chapterData[index].id,
@@ -507,7 +507,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
               }
             })
         },
-//        点赞
+        // 点赞
         addThumbs(index){
           FetchHandleUserInfo(this.chapterComment.list[index].id,'pal').then(json=>{
             if(json.returnCode===ERR_OK){
@@ -523,7 +523,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             }
           });
         },
-        //  评论翻页
+        // 评论翻页
         prePage(index){
           if(this.chapterComment.pageNum<=1){
               this.chapterComment.pageNum = 1
@@ -540,7 +540,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
           }
           this.getPaComment(index,this.chapterComment.pageNum)
         },
-//        章节切换
+        // 章节切换
         skipPage(cid,type){
           if(cid){
             this.$router.push("/chapter/"+cid)
@@ -552,7 +552,6 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             this.$message("已经是最后一章了！");
             return false;
           }
-
         },
 
         getBack(){
@@ -568,25 +567,25 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             }
           },10);
         },
-//        收藏本书/加入书架
+        // 收藏本书/加入书架
         addBookShelf(){
-            if(!this.$cookie('user_id')){this.$router.push({
-              path:'/login',
-              query: { redirect: this.$route.path } });
-              return false
+          if(!this.$cookie('user_id')){this.$router.push({
+            path:'/login',
+            query: { redirect: this.$route.path } });
+            return false
+          }
+          FetchAddBookShelf(
+            this.bookInfo.bookId,
+            this.$store.state.userInfo.pseudonym,
+            this.bookInfo.bookName
+          ).then(json=>{
+            if(json.returnCode===200){
+              this.$message(json.msg);
+              this.bookInfo.collectionStatus = this.bookInfo.collectionStatus?0:1;
             }
-            FetchAddBookShelf(
-              this.bookInfo.bookId,
-              this.$store.state.userInfo.pseudonym,
-              this.bookInfo.bookName
-            ).then(json=>{
-              if(json.returnCode===200){
-                this.$message(json.msg);
-                this.bookInfo.collectionStatus = this.bookInfo.collectionStatus?0:1;
-              }
-            });
+          });
         },
-//        打赏、推荐票、金票、书评
+        // 打赏、推荐票、金票、书评
         myConsume:function (type) {
           if(!this.$cookie('user_id')){
             this.$router.push({path:'/login',query:{ redirect:this.$route.path }});
@@ -599,13 +598,13 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             return false
           }
         },
-//        书籍自动订阅状态设置
+        // 书籍自动订阅状态设置
         getAutoState(state){
-//         初始获取自动订阅状态
+          // 初始获取自动订阅状态
           let key = this.$cookie('user_id');
           if(!key && state!==undefined){ this.$reLogin();return false}
           let loading;
-//            更新订阅状态
+          // 更新订阅状态
           if(state!==undefined && key){
             loading = this.$loading({
               lock: true,
@@ -639,7 +638,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             }
           });
         },
-//        添加阅读记录
+        // 添加阅读记录
         addReadRecord(){
           if(this.$store.state.userInfo.userId){
             FetchAddRecords({
@@ -651,7 +650,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             });
           }
         },
-//        章节订阅
+        // 章节订阅
         buyVipChapter(type){
           if(this.buyForm.autoState){
             this.getAutoState(true)
@@ -678,9 +677,9 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             }
           });
         },
-//        发布书评
+        // 发布书评
 
-//        操作提示
+        // 操作提示
         handleTip() {
           this.$notify({
             title: '提示',

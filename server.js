@@ -9,6 +9,7 @@ const microcache = require('route-cache');
 const resolve = file => path.resolve(__dirname, file);
 const { createBundleRenderer } = require('vue-server-renderer');
 const https = require('https');
+const http = require('http');
 const isProd = process.env.NODE_ENV === 'production';
 const useMicroCache = process.env.MICRO_CACHE !== 'false';
 const serverInfo =
@@ -149,13 +150,13 @@ function render (req, res) {
 
 const SSLPORT = 80;
 
-const httpsServer = https.createServer(credentials, app);
-
-httpsServer.listen(SSLPORT, function() {
+const httpsServer = https.createServer(credentials, app).listen(SSLPORT, function() {
   console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
 });
 
-app.get("*",render);
+// http.createServer(app,credentials).listen(80);
+
+app.get("*",render)
 // app.get('*', isProd ? render : (req, res) => {
 //   readyPromise.then(() => render(req, res))
 // });

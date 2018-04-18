@@ -21,7 +21,7 @@
         <table class="writing-table">
           <thead>
             <tr>
-              <th width="126" >卷名</th>
+              <th width="126">卷名</th>
               <th width="320">章节名</th>
               <th width="100">字数</th>
               <th>发布时间</th>
@@ -33,21 +33,14 @@
           </thead>
           <draggable v-model="ChapterList" :options="{draggable:'.drag-item'}" element="tbody" :move="dragMove" @start="dragStart" @update="dragEnd">
             <tr v-if="ChapterList" v-for="(item,$index) in ChapterList" class="drag-item" :key="$index">
-              <td class="tl" >
-                <p class="nclass txt-overflow">
-                  <router-link
-                    :to="'/author/writing/volume/'+item.bookId"
-                    :title="item.volumeName">
+              <td class="tl">
+                <p class="nclass txt-overflow" style="text-align:center;">
                     {{item.volumeName}}
-                  </router-link>
                 </p>
               </td>
               <td class="tl">
-                <p class="cname">
-                  <router-link
-                    class="txt-overflow"
-                    :title="item.chapterTitle"
-                    :to="'/author/writing/editChapter/'+item.id">
+                <p class="cname" style="text-align:center;">
+                  <router-link class="txt-overflow" :title="item.chapterTitle" :to="'/author/writing/editChapter/'+item.id">
                     {{item.chapterTitle}}
                   </router-link>
                   <i v-show="curTime<item.releaseTime" class="el-icon-time"></i>

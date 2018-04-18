@@ -44,7 +44,7 @@
           <el-input v-show="ruleForm.whetherPublic==1" type="textarea" class="context" v-model="ruleForm.chapterContent"></el-input>
           <div v-show="ruleForm.whetherPublic!=1" class="iframe-wrap">
             <div id="content_edit_sole" unselectable="off" @keydown.native="preventCopy" v-if="reLoad" :contenteditable="true" @input="editChange" >
-              <template v-for="(item,$index) in initial">
+              <template v-for="(item, $index) in initial">
                 <p  :uuid="item.uuid">
                  {{item.content}}
                 </p>
@@ -255,6 +255,7 @@
             return time.getTime() < Date.now() - 8.64e7;
           }
         },
+        bookId: null,
         reLoad:true,
         iframeShow:'hidden',
         original:{}, //原始数据
@@ -311,7 +312,7 @@
       };
     },
     methods: {
-//        添加新章节
+      // 添加新章节
       submitForm(type) {
         this.$myLoad();
         this.$refs['editChapterForm'].validate((valid) => {
@@ -324,19 +325,19 @@
             this.$nextTick(()=>{
               this.$loading().close()
             });
-//            this.isLoading = false;
+            // this.isLoading = false;
             this.$message({message:'请完善信息后提交！',type:'warning',duration:0});
             return false;
           }
         });
       },
       editChapter(){
-//          首先获取网络时间
+        // 首先获取网络时间
         if(this.ruleForm.chapterLength>20000){
           this.$nextTick(()=>{
             this.$loading().close()
           });
-//          this.isLoading = false;
+          // this.isLoading = false;
           this.$confirm('文章内容超出字数长度限制，请保证字数长度在20000以内！', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -351,14 +352,16 @@
               this.$loading().close()
             });
             if(json.returnCode===200){
-              this.$alert(!cloneData.whetherPublic?"编辑成功":(cloneData.whetherPublic===1?'保存草稿成功':'草稿发布成功'), '', {
+              this.$alert(!cloneData.whetherPublic?"编辑成功":(cloneData.whetherPublic===1 ? '保存草稿成功':'草稿发布成功'), '', {
                 confirmButtonText: '确  定',
                 customClass:'issue-alert',
                 lockScroll:false,
                 type:'success',
                 callback: action => {
                   window.scrollTo(0,0);
-                  this.getChapterInfo()
+                  // lushiyu
+                  this.$router.push({ path: '/author/writing/chapterList/'+this.bookId })
+                  // this.getChapterInfo()
                 }
               });
             }
@@ -366,11 +369,11 @@
         };
 
         if(this.ruleForm.whetherPublic===1){
-//        发布草稿
+          // 发布草稿
           cloneData.chapterContent = this.$trim(cloneData.chapterContent).replace(/\n+\s+/g,'<H><LG>')+"<H><LG>";
           cloneData.whetherPublic = cloneData.issue?2:1;
         }else {
-//        非草稿
+          // 非草稿
           let nodeList = document.getElementById('content_edit_sole').childNodes;
           cloneData.chapterContent = '';
           for(let i=0,len=nodeList.length;i<len;i++){
@@ -382,7 +385,7 @@
         cloneData.releaseTime = this.$formTime(cloneData.releaseTime,"long");
         release()
       },
-//      新增分卷
+      // 新增分卷
       addNewVolume(formName){
         this.$refs[formName].validate((valid) => {
           if(valid){
@@ -402,9 +405,8 @@
           }
         });
       },
-//      章节信息回显
-      getChapterInfo()
-      {
+      // 章节信息回显
+      getChapterInfo() {
         let reg1 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/;
         let reg2 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/g;
         FetchNetTime().then(time=>{
@@ -417,6 +419,7 @@
              FetchGetBookInfo(this.$route.params.cid,'chapter').then(json=>{
                this.update = false;
                if(json.returnCode===200){
+                 this.bookId = json.data.bookId
                  this.reLoad = false;
                  this.original = JSON.parse(JSON.stringify(json.data));
                  this.initial = [];
@@ -448,7 +451,7 @@
            }
         });
       },
-      //      获取分卷列表
+      // 获取分卷列表
       getVolume(){
         FetchGetBookInfo(this.ruleForm.bookId,'volume').then(json=>{
           if(json.returnCode===200){
@@ -474,27 +477,27 @@
         this.ruleForm.chapterContent = this.$trim(parents.innerText).replace(/(&nbsp;)/g,'');
         if(pList.length>0){
           for(let i=0,len=pList.length;i<len;i++){
-//            重置样式,防止粘贴复制带来过来的内联样式
+            // 重置样式,防止粘贴复制带来过来的内联样式 
             pList[i].style = null;
-//            pList[i].innerText = this.$trim(pList[i].innerText);
+            // pList[i].innerText = this.$trim(pList[i].innerText);
             if(this.$trim(pList[i].innerText).length){
                 if(!pList[i].getAttribute("uuid")){
-                    pList[i].setAttribute("uuid","<X><XG>")
+                    pList[i].setAttribute("uuid","<H><LG>")
                 }else {
                     if(i>0 && pList[i].getAttribute("uuid").length > 7 && pList[(i-1)].getAttribute('uuid')===pList[i].getAttribute("uuid")){
-                      pList[i].setAttribute("uuid","<X><XG>")
+                      pList[i].setAttribute("uuid","<H><LG>")
                     }
                 }
               if(pList[i].childNodes.length>1){
                 pList[i].innerHTML = this.$trim(pList[i].innerText).replace(/(&nbsp;)/g,'');
               }
             }else {
-                pList[i].setAttribute('uuid','<X><XG>');
+                pList[i].setAttribute('uuid','<H><LG>');
             }
           }
         }
         if(e.target.innerHTML.length<1){
-//        保证父元素中至少存在一个p标签，以此确保换行后新增的标签为p
+          // 保证父元素中至少存在一个p标签，以此确保换行后新增的标签为p
           let p = document.createElement('p');
           p.innerHTML='<br>';
           p.style = null;
@@ -532,9 +535,9 @@
           return false
         }
       },
-//      编辑章节后文本校对
+      // 编辑章节后文本校对
       collateText(old,fresh){
-//          old、fersh 均为数组 原数组包含uuid
+        // old、fersh 均为数组 原数组包含uuid
         fresh = this.ruleForm.chapterContent.replace(/\s*$/,'').split(/\n+\s*/);
         let contentStr = '';
         console.log(old)
@@ -560,9 +563,9 @@
                                       break;
                                     }else{
                                       console.log(n,fresh[n]);
-                                      contentStr += fresh[n] + '<X><XG>';
-    //                                  fresh.splice(n,1);
-    //                                  break;
+                                      contentStr += fresh[n] + '<H><XG>';
+                                      // fresh.splice(n,1);
+                                      // break;
                                     }
                                   console.log('新增元素',n,perList.length)
                                 }

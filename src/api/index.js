@@ -61,7 +61,8 @@ function fetch(child,data,type,tip=true) {
 
     const config = {
       url:child,
-      baseURL:'https://www.lajixs.com/api',
+      baseURL:'https://lajixs.com/api',
+    //   baseURL:'http://192.168.0.136:8081/api',
       transformRequest: [function (data) {
         return qs.stringify(data);
       }],

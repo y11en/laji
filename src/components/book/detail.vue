@@ -1,5 +1,5 @@
 <template id="Detail">
-    <div v-wechat-title="Title+'－辣鸡小说'" class="container clear" :style="{ minHeight:minHeight + 'px'}">
+    <div v-wechat-title="Title" class="container clear" :style="{ minHeight:minHeight + 'px'}">
       <template v-if="bookDetail && bookDetail.bookListInfo">
         <div class="subNavWrap">
           <span class="fl">当前位置：</span>
@@ -588,7 +588,8 @@
           return this.reply.replace(/\s/g,'').length +'/'+this.$trim(this.commentText).length
         },
         Title:function () {
-          return this.bookDetail.bookListInfo?(this.bookDetail.bookListInfo.bookName +'－' +this.bookDetail.bookListInfo.writerName+'－辣鸡小说'):'书籍不存在'
+          return this.bookDetail.bookListInfo?(this.bookDetail.bookListInfo.bookName +'－' +this.bookDetail.bookListInfo.writerName):
+          (this.bookDetail.bookListInfo === ''?'书籍不存在':'书籍详情')+'－辣鸡小说'
         }
       }
     };
