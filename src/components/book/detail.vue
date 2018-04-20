@@ -39,7 +39,7 @@
                 <div class="bi-center">
                   <p >
                     <span>点击：{{bookDetail.bookdate?bookDetail.bookdate.bookClickCount:0 | number}}</span>
-                    <span>书评：{{bookCommentList.total === undefined ? bookCommentList.total : 0}}</span>
+                    <span>书评：{{bookCommentList.total === undefined ? 0 : bookCommentList.total}}</span>
                     <span>吐槽：{{bookDetail.bookdate?bookDetail.bookdate.tucaoIndex:0}}</span>
                   </p>
                   <p >

@@ -28,21 +28,21 @@
                   <div class="handle">
                     <button @click="addBookShelf(item.bookId,item.bookName,index)"> {{item.collectionStatus?'已收藏':'收藏'}}</button>
                     <p class="ticket">
-                    <span v-if="$route.params.type==='golden'">
-                      {{item.tempTicketSum}}金椒
-                    </span>
-                      <span v-else-if="$route.params.type==='rec'">
-                      {{item.tempTicketSum}}小米椒
-                    </span>
-                      <span v-else-if="$route.params.type==='click'">
-                      {{item.tempTicketSum | number}}点击
-                    </span>
-                      <span v-else-if="$route.params.type==='reward'">
-                      {{item.tempTicketSum}}辣椒
-                    </span>
-                      <span v-else-if="$route.params.type==='debate'">
-                      {{item.tempTicketSum | number}}条
-                    </span>
+                        <span v-if="$route.params.type==='golden'">
+                            {{item.tempTicketSum}}金椒
+                        </span>
+                        <span v-else-if="$route.params.type==='rec'">
+                            {{item.tempTicketSum}}小米椒
+                        </span>
+                        <span v-else-if="$route.params.type==='click'">
+                            {{item.tempTicketSum | number}}点击
+                        </span>
+                        <span v-else-if="$route.params.type==='reward'">
+                            {{item.tempTicketSum}}辣椒
+                        </span>
+                        <span v-else-if="$route.params.type==='debate'">
+                            {{item.tempTicketSum}}条
+                        </span>
                     </p>
                   </div>
                   <div class="bl-top">
@@ -90,83 +90,80 @@
               dataList:{}
           }
       },
+      mounted(){
+          this.getRank()
+      },
       methods:{
         handleCurrentChange(val){
           this.$router.push({ params:{ page:val }})
         },
         getRank(){
-              let self = this,type;
-          switch (this.$route.params.type){
-            case "golden":
-              type = 1;
-              break;
-            case "rec":
-               type = 2;
-              break;
-            case "click":
-              type = 3;
-              break;
-            case "latest":
-              type = 4;
-              break;
-            case "sell":
-              type = 5;
-              break;
-            case "debate":
-              type = 6;
-              break;
-            case "update":
-              type = 7;
-              break;
-            case "reward":
-              type = 8;
-              break;
-          }
-          FetchGetBookInfo({
-            type:type,
-            page:this.$route.params.page
-          },'rank').then(json=>{
-            if(json.returnCode===200){
-              if(self.$route.params.type==='latest'){
-                self.dataList = json.data.newBookRankingList
-              }else {
-                if(self.$route.params.time==='week'){
-                  self.dataList = json.data.week
-                }else if(self.$route.params.time==='month'){
-                  self.dataList = json.data.month
-                }else{
-                  self.dataList = json.data.total
-                }
-              }
+            let self = this,type;
+            console.log(self)
+            switch (this.$route.params.type){
+                case "golden":
+                    type = 1;
+                break;
+                case "rec":
+                    type = 2;
+                break;
+                case "click":
+                    type = 3;
+                break;
+                case "latest":
+                    type = 4;
+                break;
+                case "sell":
+                    type = 5;
+                break;
+                case "debate":
+                    type = 6;
+                break;
+                case "update":
+                    type = 7;
+                break;
+                case "reward":
+                    type = 8;
+                break;
             }
-          });
+            FetchGetBookInfo({ type: type, page: this.$route.params.page }, 'rank').then(json=>{
+                if(json.returnCode===200){
+                    if(self.$route.params.type==='latest'){
+                        self.dataList = json.data.newBookRankingList
+                    }else {
+                        if(self.$route.params.time==='week'){
+                            self.dataList = json.data.week
+                        }else if(self.$route.params.time==='month'){
+                            self.dataList = json.data.month
+                        }else{
+                            self.dataList = json.data.total
+                        }
+                    }
+                }
+            });
         },
         addBookShelf(bid,name,index){
             this.$reLogin();
-            FetchAddBookShelf(bid,this.$store.state.userInfo.pseudonym,name).then(json=>{
+            FetchAddBookShelf(bid, this.$store.state.userInfo.pseudonym, name).then(json=>{
               if(json.returnCode===200){
                 this.$message(json.msg);
                 this.dataList.list[index].collectionStatus = this.dataList.list[index].collectionStatus?0:1;
               }
             });
         }
-
       },
-      mounted(){
-          this.getRank()
-      },
-      watch:{
-          "$route":{
-            handler(val,oldVal){
-              if(Number(val.params.page)===Number(oldVal.params.page) && Number(oldVal.params.page)!==1){
-                this.$router.push({ params:{ page:1 }});
-              }else {
-                this.getRank()
-              }
-            },
-            deep:true
-          }
-      },
+        watch: {
+            "$route": {
+                handler(val,oldVal) {
+                    if(Number(val.params.page)===Number(oldVal.params.page) && Number(oldVal.params.page)!==1){
+                        this.$router.push({ params:{ page:1 }});
+                    }else {
+                        this.getRank()
+                    }
+                },
+                deep:true
+            }
+        },
       computed:{
           page:{
               get:function () {

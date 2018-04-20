@@ -53,8 +53,8 @@
           </div>
           <el-form-item prop="authorWords">
             <div class="author-say-wrap">
-              <el-input class="author-say" type="textarea" v-model="ruleForm.authorWords" placeholder="作者的话（不超过100字）"></el-input>
-              <span class="say-word">{{ruleForm.authorWords?ruleForm.authorWords.length:0}}/100</span>
+              <el-input class="author-say" type="textarea" v-model="ruleForm.authorWords" placeholder="作者的话（不超过200字）"></el-input>
+              <span class="say-word">{{ruleForm.authorWords ? ruleForm.authorWords.length : 0}}/200</span>
             </div>
           </el-form-item>
           <span class="words">共 {{length}} 字</span>
@@ -108,530 +108,528 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-  import { FetchCheckName,FetchGetBookInfo,FetchAuthorHandleBook,FetchNetTime } from '../../api'
-  
-//  距离算法实现文本相似度比较
-  var LevenshteinDistance = {
+import { FetchCheckName,FetchGetBookInfo,FetchAuthorHandleBook,FetchNetTime } from '../../api'
+    // 距离算法实现文本相似度比较
+var LevenshteinDistance = {
     _str1:null,
     _str3:null,
     _matrix:null,
     _isString:function(s){
-      return Object.prototype.toString.call(s) === '[object String]';
+        return Object.prototype.toString.call(s) === '[object String]'
     },
     _isNumber:function(s){
-      return Object.prototype.toString.call(s) === '[object Number]';
+        return Object.prototype.toString.call(s) === '[object Number]'
     },
     init:function(str1,str2){
-      if(!this._isString(str1) || !this._isString(str2)) return;
-      this._str1 = str1;
-      this._str2 = str2;
-      str1.length &&  str2.length && this._createMatrix(str1.length+1,str2.length+1);
-      this._matrix && this._initMatrix();
-      return this;
+        if(!this._isString(str1) || !this._isString(str2)) return
+        this._str1 = str1
+        this._str2 = str2
+        str1.length &&  str2.length && this._createMatrix(str1.length+1,str2.length+1)
+        this._matrix && this._initMatrix()
+        return this
     },
     get:function(){
-      return 1 - this._getDistance()/Math.max(this._str1.length,this._str2.length);
+        return 1 - this._getDistance()/Math.max(this._str1.length,this._str2.length)
     },
     //计算编辑距离
     _getDistance:function(){
-      var len1 = this._str1.length,
-        len2 = this._str2.length;
-      if(!len1 || !len2) return Math.max(len1,len2);
-      var str1 = this._str1.split(''),
-        str2 = this._str2.split('');
-      var i = 0,j = 0,temp = 0;
-      while(i++ < len1){
-        j = 0;
-        while(j++ < len2){
-          temp = str1[i-1] === str2[j-1] ? 0 : 1;
-          this._matrix[i][j] = Math.min(this._matrix[i-1][j]+1,this._matrix[i][j-1]+1,this._matrix[i-1][j-1]+temp);
-        }
-      }
-      return this._matrix[i-1][j-1];
-    },
-    /*
-     * 初始化矩阵
-     * 为第一行、第一列赋值
-     */
-    _initMatrix:function(){
-      var cols = this._matrix[0].length,
-        rows = this._matrix.length;
-      var l = Math.max(cols,rows);
-      while(l--){
-        cols-1 >= l && (this._matrix[0][l] = l);
-        rows-1 >= l && (this._matrix[l][0] = l);
-      }
-    },
-    /*
-     * 创建矩阵
-     * n:行
-     * m:列
-     */
-    _createMatrix:function(n,m){
-      if(!this._isNumber(n) || !this._isNumber(m) || n<1 || m<1) return;
-      this._matrix = new Array(n);var i = 0;
-      while(i<n) this._matrix[i++] = new Array(m);
-    }
-  };
-  export default {
-    data() {
-      let validateContent = (rule,value,callback) =>{
-        if(this.ruleForm.chapterLength){
-          if(this.ruleForm.chapterLength>20000){
-            this.isLoading = false;
-            this.$message({message:'总长度不可超过20000个字符',type:'warning'});
-          }else {
-            if(this.$regEmoji(value)){
-              this.$message({ message:'不可包含emoji表情图',type:'warning' })
-            }else {
-              callback()
+        var len1 = this._str1.length, len2 = this._str2.length
+        if(!len1 || !len2) return Math.max(len1,len2)
+        var str1 = this._str1.split(''), str2 = this._str2.split('')
+        var i = 0, j = 0, temp = 0
+        while(i++ < len1){
+            j = 0
+            while(j++ < len2){
+                temp = str1[i-1] === str2[j-1] ? 0 : 1
+                this._matrix[i][j] = Math.min(this._matrix[i-1][j]+1,this._matrix[i][j-1]+1,this._matrix[i-1][j-1]+temp)
             }
-          }
-        }else {
-          callback(new Error(" "));
         }
-      };
-      let validateAuthorSay = (rule,value,callback) =>{
-        if(value){
-          if(this.$regEmoji(value)){
-            callback(new Error("不可包含emoji表情图"))
-          }else if(value.length>100) {
-            callback(new Error('总字数不可超过100字符'))
-          }else {
-            callback()
-          }
-        }else {
-          callback(new Error("请添加作者的话"));
+        return this._matrix[i-1][j-1]
+    },
+    /*
+    * 初始化矩阵
+    * 为第一行、第一列赋值
+    */
+    _initMatrix:function(){
+        var cols = this._matrix[0].length, rows = this._matrix.length
+        var l = Math.max(cols,rows)
+        while(l--){
+            cols-1 >= l && (this._matrix[0][l] = l)
+            rows-1 >= l && (this._matrix[l][0] = l)
         }
-      };
-      let validateVolume = (rule,value,callback) => {
-          if(!value||this.$trim(value).length<1){
-              this.volumeForm.volumeName = '';
-              callback(new Error("卷名不能为空"))
-          }else {
-              FetchCheckName({
-                volumeName:value,
-                bookid:this.ruleForm.bookId
-              },'volume').then(json=>{
-                if (json.returnCode===200) {
-                  callback()
-                } else {
-                  callback(new Error(json.msg))
+    },
+    /*
+    * 创建矩阵
+    * n:行
+    * m:列
+    */
+    _createMatrix: function(n, m) {
+        if(this._isNumber(n) || !this._isNumber(m) || n<1 || m<1) return
+            this._matrix = new Array(n);var i = 0;
+        while(i<n) this._matrix[i++] = new Array(m)
+    }
+}
+export default {
+    data() {
+        let validateContent = (rule,value,callback) =>{
+            if(this.ruleForm.chapterLength){
+                if(this.ruleForm.chapterLength>20000){
+                    this.isLoading = false
+                    this.$message({message:'总长度不可超过20000个字符',type:'warning'})
+                }else {
+                    if(this.$regEmoji(value)){
+                        this.$message({ message:'不可包含emoji表情图',type:'warning' })
+                    }else {
+                        callback()
+                    }
                 }
-              });
-          }
-      };
-      let validateCheckCn = (rule,value,callback) => {
-        value = this.$trim(value);
-        if(!value||this.$trim(value).length<1){
-          this.ruleForm.chapterTitle = '';
-          callback(new Error('请输入章节名称'))
-        }else{
-          if(this.$trim(value)===this.oldChapterName){
-            callback()
-          }else {
-            if(value.length>20){
-                callback(new Error('章节名长度不可超过20字符'));
+            }else {
+                callback(new Error(" "))
+            }
+        }
+
+        let validateAuthorSay = (rule,value,callback) =>{
+            // if(value){
+                if(this.$regEmoji(value)){
+                    callback(new Error("不可包含emoji表情图"))
+                }else if(value.length>200) {
+                    callback(new Error('总字数不可超过200字符'))
+                }else {
+                    callback()
+                }
+            // }else {
+                // callback(new Error("请添加作者的话"))
+            // }
+        }
+
+        let validateVolume = (rule,value,callback) => {
+            if(!value||this.$trim(value).length<1){
+                this.volumeForm.volumeName = ''
+                callback(new Error("卷名不能为空"))
+            }else {
+                FetchCheckName({ volumeName:value, bookid:this.ruleForm.bookId },'volume').then(json=>{
+                    if (json.returnCode===200) {
+                        callback()
+                    } else {
+                        callback(new Error(json.msg))
+                    }
+                })
+            }
+        }
+
+        let validateCheckCn = (rule,value,callback) => {
+            value = this.$trim(value)
+            if(!value||this.$trim(value).length<1){
+                this.ruleForm.chapterTitle = ''
+                callback(new Error('请输入章节名称'))
+            }else{
+                if(this.$trim(value)===this.oldChapterName){
+                    callback()
+                }else {
+                    if(value.length>20){
+                        callback(new Error('章节名长度不可超过20字符'))
+                        return false
+                    }
+                    FetchCheckName({ chapterName:value, bookId:this.ruleForm.bookId },'chapter').then(json=>{
+                        if(json.returnCode===200){
+                            callback()
+                        }else{
+                            this.$message('章节名重复，请重新填写！')
+                            callback(new Error('章节名重复，请重新填写！'))
+                        }
+                    })
+                }
+            }
+        }
+        return {
+            isLoading:false,
+            pickerOptions: {
+                disabledDate(time) {
+                    return time.getTime() < Date.now() - 8.64e7;
+                }
+            },
+            bookId: null,
+            reLoad:true,
+            iframeShow:'hidden',
+            original:{}, //原始数据
+            oldList:[], //原始章节内容
+            volumeList:[], //书籍卷列表
+            isAutoPublish:false,
+            labelWidth:'136px',
+            dialogFormVisible:false,
+            editContent:'',
+            initial:[],
+            cidList:[], //章节段ID列表
+            volumeForm:{
+                volumeName:''
+            },
+            oldChapterName:'',
+            ruleForm: {  //章节信息
+                bookTitle: '',
+                chapterTitle:'',
+                volumeId: null,
+                releaseTime: null,
+                chapterContent: '',
+                whetherPublic:0,
+                chapterLength:0,
+                chapterIsvip:0,
+                authorWords:'',
+                issue:false,
+                update:false
+            },
+            rule:{
+                volumeName: [
+                    { required: true,validator:validateVolume , trigger: 'blur' }
+                ]
+            },
+            rules: {
+                chapterTitle: [
+                    { required: true,validator:validateCheckCn , trigger: 'blur' }
+                ],
+                volumeId: [
+                    { required: true,type:'number', message: '请选择分卷', trigger: 'change' }
+                ],
+                bookTitle: [
+                    { required: true, message: '请输入书籍名称', trigger: 'blur' }
+                ],
+                chapterContent: [
+                    { required: true, validator: validateContent, trigger: 'change' }
+                ],
+                releaseTime: [
+                    { required: true, type:'date', message: '请选取时间', trigger: 'blur' }
+                ],
+                authorWords: [
+                    { required: true, validator:validateAuthorSay ,trigger: 'change' }
+                ]
+            }
+        }
+    },
+
+    methods: {
+        // 添加新章节
+        submitForm(type) {
+            this.$myLoad();
+            this.$refs['editChapterForm'].validate((valid) => {
+                if (valid) {
+                    if(type === 'draft'){
+                        this.ruleForm.whetherPublic = 1
+                    }
+                    this.editChapter()
+                } else {
+                    this.$nextTick(()=>{
+                        this.$loading().close()
+                    })
+                    // this.isLoading = false;
+                    this.$message({message:'请完善信息后提交！',type:'warning'})
+                    return false
+                }
+            })
+        },
+
+        editChapter() {
+            // 首先获取网络时间
+            if(this.ruleForm.chapterLength>20000){
+                this.$nextTick(()=>{
+                    this.$loading().close()
+                })
+                // this.isLoading = false;
+                this.$confirm('文章内容超出字数长度限制，请保证字数长度在20000以内！', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
                 return false
             }
-            FetchCheckName({
-                chapterName:value,
-                bookId:this.ruleForm.bookId
-            },'chapter').then(json=>{
-                if(json.returnCode===200){
-                  callback()
-                }else{
-                  this.$message('章节名重复，请重新填写！');
-                  callback(new Error('章节名重复，请重新填写！'));
-                }
-            });
-          }
-        }
-      };
-      return {
-        isLoading:false,
-        pickerOptions: {
-          disabledDate(time) {
-            return time.getTime() < Date.now() - 8.64e7;
-          }
-        },
-        bookId: null,
-        reLoad:true,
-        iframeShow:'hidden',
-        original:{}, //原始数据
-        oldList:[], //原始章节内容
-        volumeList:[], //书籍卷列表
-        isAutoPublish:false,
-        labelWidth:'136px',
-        dialogFormVisible:false,
-        editContent:'',
-        initial:[],
-        cidList:[], //章节段ID列表
-        volumeForm:{
-          volumeName:''
-        },
-        oldChapterName:'',
-        ruleForm: {  //章节信息
-          bookTitle: '',
-          chapterTitle:'',
-          volumeId: null,
-          releaseTime: null,
-          chapterContent: '',
-          whetherPublic:0,
-          chapterLength:0,
-          chapterIsvip:0,
-          authorWords:'',
-          issue:false,
-          update:false
-        },
-        rule:{
-          volumeName: [
-            { required: true,validator:validateVolume , trigger: 'blur' }
-          ]
-        },
-        rules: {
-          chapterTitle: [
-            { required: true,validator:validateCheckCn , trigger: 'blur' }
-          ],
-          volumeId: [
-            { required: true,type:'number', message: '请选择分卷', trigger: 'change' }
-          ],
-          bookTitle: [
-            { required: true, message: '请输入书籍名称', trigger: 'blur' }
-          ],
-          chapterContent: [
-            { required: true, validator: validateContent, trigger: 'change' }
-          ],
-          releaseTime: [
-            { required: true, type:'date', message: '请选取时间', trigger: 'blur' }
-          ],
-          authorWords: [
-            { required: true,validator:validateAuthorSay ,trigger: 'change' }
-          ]
-        }
-      };
-    },
-    methods: {
-      // 添加新章节
-      submitForm(type) {
-        this.$myLoad();
-        this.$refs['editChapterForm'].validate((valid) => {
-          if (valid) {
-            if(type==='draft'){
-              this.ruleForm.whetherPublic = 1
+            let cloneData = JSON.parse(JSON.stringify(this.ruleForm))
+            let release = () =>{
+                FetchAuthorHandleBook(cloneData,'ec').then(json=>{
+                    this.$nextTick(()=>{
+                        this.$loading().close()
+                    })
+                    if(json.returnCode===200){
+                        this.$alert(!cloneData.whetherPublic?"编辑成功":(cloneData.whetherPublic===1 ? '保存草稿成功':'草稿发布成功'), '', {
+                            confirmButtonText: '确  定',
+                            customClass:'issue-alert',
+                            lockScroll:false,
+                            type:'success',
+                            callback: action => {
+                                window.scrollTo(0,0)
+                                // lushiyu
+                                this.$router.push({ path: '/author/writing/chapterList/'+this.bookId })
+                                // this.getChapterInfo()
+                            }
+                        })
+                    }
+                })
             }
-            this.editChapter()
-          } else {
-            this.$nextTick(()=>{
-              this.$loading().close()
-            });
-            // this.isLoading = false;
-            this.$message({message:'请完善信息后提交！',type:'warning',duration:0});
-            return false;
-          }
-        });
-      },
-      editChapter(){
-        // 首先获取网络时间
-        if(this.ruleForm.chapterLength>20000){
-          this.$nextTick(()=>{
-            this.$loading().close()
-          });
-          // this.isLoading = false;
-          this.$confirm('文章内容超出字数长度限制，请保证字数长度在20000以内！', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          });
-          return false;
-        }
-        let cloneData = JSON.parse(JSON.stringify(this.ruleForm));
-        let release = () =>{
-          FetchAuthorHandleBook(cloneData,'ec').then(json=>{
-            this.$nextTick(()=>{
-              this.$loading().close()
-            });
-            if(json.returnCode===200){
-              this.$alert(!cloneData.whetherPublic?"编辑成功":(cloneData.whetherPublic===1 ? '保存草稿成功':'草稿发布成功'), '', {
-                confirmButtonText: '确  定',
-                customClass:'issue-alert',
-                lockScroll:false,
-                type:'success',
-                callback: action => {
-                  window.scrollTo(0,0);
-                  // lushiyu
-                  this.$router.push({ path: '/author/writing/chapterList/'+this.bookId })
-                  // this.getChapterInfo()
-                }
-              });
-            }
-          });
-        };
 
-        if(this.ruleForm.whetherPublic===1){
-          // 发布草稿
-          cloneData.chapterContent = this.$trim(cloneData.chapterContent).replace(/\n+\s+/g,'<H><LG>')+"<H><LG>";
-          cloneData.whetherPublic = cloneData.issue?2:1;
-        }else {
-          // 非草稿
-          let nodeList = document.getElementById('content_edit_sole').childNodes;
-          cloneData.chapterContent = '';
-          for(let i=0,len=nodeList.length;i<len;i++){
-            if(this.$trim(nodeList[i].innerText).length>0){
-              cloneData.chapterContent += this.$trim(nodeList[i].innerText)+nodeList[i].getAttribute('uuid')
-            }
-          }
-        }
-        cloneData.releaseTime = this.$formTime(cloneData.releaseTime,"long");
-        release()
-      },
-      // 新增分卷
-      addNewVolume(formName){
-        this.$refs[formName].validate((valid) => {
-          if(valid){
-              FetchAuthorHandleBook({
-                volumeName:this.volumeForm.volumeName,
-                bookName:this.ruleForm.bookTitle,
-                bookid:this.$route.params.bid
-              },'av').then(json=>{
-                if(json.returnCode === 200) {
-                  this.dialogFormVisible = false;
-                  this.$message("添加成功");
-                  this.getChapterInfo()
+            if(this.ruleForm.whetherPublic===1){
+                // 发布草稿
+                cloneData.chapterContent = this.$trim(cloneData.chapterContent).replace(/\n+\s+/g,'<H><LG>')+"<H><LG>"
+                cloneData.whetherPublic = cloneData.issue?2:1
+            }else {
+                // 非草稿
+                let nodeList = document.getElementById('content_edit_sole').childNodes
+                cloneData.chapterContent = ''
+                for(let i=0,len=nodeList.length;i<len;i++){
+                    if(this.$trim(nodeList[i].innerText).length>0){
+                        cloneData.chapterContent += this.$trim(nodeList[i].innerText)+nodeList[i].getAttribute('uuid')
+                    }
                 }
-              });
-          }else {
-            this.$message({message:'请填写卷名！',type:'warning'})
-          }
-        });
-      },
-      // 章节信息回显
-      getChapterInfo() {
-        let reg1 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/;
-        let reg2 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/g;
-        FetchNetTime().then(time=>{
-           if(time.returnCode===200){
-             let count = 0;
-             setInterval(()=>{
-               count++;
-               this.$set(this.original,'nowTime',time.data.beijing+count*1000);
-             },1000);
-             FetchGetBookInfo(this.$route.params.cid,'chapter').then(json=>{
-               this.update = false;
-               if(json.returnCode===200){
-                 this.bookId = json.data.bookId
-                 this.reLoad = false;
-                 this.original = JSON.parse(JSON.stringify(json.data));
-                 this.initial = [];
-                 delete json.data.createChapterTime;
-                 json.data.releaseTime =  new Date(json.data.releaseTime);
-                 this.oldChapterName = json.data.chapterTitle;
-                 if(json.data.whetherPublic===1){
-                   json.data.chapterContent = json.data.chapterContent.replace(/<H><LG>/g,'\n\n  ');
-                 }else {
-                   let idList = json.data.chapterContent.match(reg2);
-                   let txtList = json.data.chapterContent.split(reg1);
-                   json.data.chapterContent = json.data.chapterContent.replace(reg2,'\n');
-                   idList.forEach((item,index)=>{
-                     this.initial.push({
-                       uuid:item,
-                       content:this.$trim(txtList[index])
-                     })
-                   });
-                   this.oldList = JSON.parse(JSON.stringify(this.initial))
-                   
-                 }
-                 this.ruleForm = json.data;
-                 this.getVolume();
-                 setTimeout(()=>{
-                   this.reLoad = true;
-                 },100)
-               }
-             })
-           }
-        });
-      },
-      // 获取分卷列表
-      getVolume(){
-        FetchGetBookInfo(this.ruleForm.bookId,'volume').then(json=>{
-          if(json.returnCode===200){
-            if(json.data < 1){
-                FetchGetBookInfo(this.$route.params.bid,'book').then(json2=>{
-                    if(json2.returnCode===200){
-                      this.ruleForm.bookTitle = json2.data.bookName;
-                      this.ruleForm.bookId = json2.data.bookId;
+            }
+            cloneData.releaseTime = this.$formTime(cloneData.releaseTime,"long")
+            release()
+        },
+
+        // 新增分卷
+        addNewVolume(formName) {
+            this.$refs[formName].validate((valid) => {
+            if(valid){
+                FetchAuthorHandleBook({
+                    volumeName:this.volumeForm.volumeName,
+                    bookName:this.ruleForm.bookTitle,
+                    bookid:this.$route.params.bid
+                },'av').then(json=>{
+                    if(json.returnCode === 200) {
+                    this.dialogFormVisible = false;
+                    this.$message("添加成功");
+                    this.getChapterInfo()
                     }
                 });
             }else {
-              this.volumeList = json.data;
-              this.ruleForm.bookTitle = json.data[0].bookName;
-              this.ruleForm.bookId = json.data[0].bookid;
+                this.$message({message:'请填写卷名！',type:'warning'})
             }
-            this.update = true
-          }
-        });
-      },
-      editChange(e){
-        let parents = document.getElementById('content_edit_sole');
-        let pList = parents.childNodes;
-        this.ruleForm.chapterContent = this.$trim(parents.innerText).replace(/(&nbsp;)/g,'');
-        if(pList.length>0){
-          for(let i=0,len=pList.length;i<len;i++){
-            // 重置样式,防止粘贴复制带来过来的内联样式 
-            pList[i].style = null;
-            // pList[i].innerText = this.$trim(pList[i].innerText);
-            if(this.$trim(pList[i].innerText).length){
-                if(!pList[i].getAttribute("uuid")){
-                    pList[i].setAttribute("uuid","<H><LG>")
-                }else {
-                    if(i>0 && pList[i].getAttribute("uuid").length > 7 && pList[(i-1)].getAttribute('uuid')===pList[i].getAttribute("uuid")){
-                      pList[i].setAttribute("uuid","<H><LG>")
+            });
+        },
+
+        // 章节信息回显
+        getChapterInfo() {
+            let reg1 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/
+            let reg2 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/g
+            FetchNetTime().then(time=>{
+                if(time.returnCode===200){
+                    let count = 0
+                    setInterval(()=>{
+                        count++
+                        this.$set(this.original,'nowTime',time.data.beijing+count*1000)
+                    },1000)
+                    FetchGetBookInfo(this.$route.params.cid,'chapter').then(json=>{
+                        this.update = false
+                        if(json.returnCode===200){
+                            this.bookId = json.data.bookId
+                            this.reLoad = false
+                            this.original = JSON.parse(JSON.stringify(json.data))
+                            this.initial = []
+                            delete json.data.createChapterTime
+                            json.data.releaseTime =  new Date(json.data.releaseTime)
+                            this.oldChapterName = json.data.chapterTitle
+                            if(json.data.whetherPublic===1){
+                                json.data.chapterContent = json.data.chapterContent.replace(/<H><LG>/g,'\n\n  ')
+                            }else {
+                                let idList = json.data.chapterContent.match(reg2)
+                                let txtList = json.data.chapterContent.split(reg1)
+                                json.data.chapterContent = json.data.chapterContent.replace(reg2,'\n')
+                                idList.forEach((item,index)=>{
+                                    this.initial.push({
+                                        uuid:item,
+                                        content:this.$trim(txtList[index])
+                                    })
+                                })
+                                this.oldList = JSON.parse(JSON.stringify(this.initial))
+                            }
+                            this.ruleForm = json.data
+                            this.getVolume()
+                            setTimeout(()=>{ this.reLoad = true }, 100)
+                        }
+                    })
+                }
+            })
+        },
+
+        // 获取分卷列表
+        getVolume() {
+            FetchGetBookInfo(this.ruleForm.bookId,'volume').then(json=>{
+                if(json.returnCode===200){
+                    if(json.data < 1){
+                        FetchGetBookInfo(this.$route.params.bid,'book').then(json2=>{
+                            if(json2.returnCode===200){
+                                this.ruleForm.bookTitle = json2.data.bookName
+                                this.ruleForm.bookId = json2.data.bookId
+                            }
+                        });
+                    }else {
+                        this.volumeList = json.data
+                        this.ruleForm.bookTitle = json.data[0].bookName
+                        this.ruleForm.bookId = json.data[0].bookid
+                    }
+                    this.update = true
+                }
+            })
+        },
+
+        editChange(e) {
+            let parents = document.getElementById('content_edit_sole')
+            let pList = parents.childNodes
+            this.ruleForm.chapterContent = this.$trim(parents.innerText).replace(/(&nbsp;)/g,'')
+            if(pList.length>0){
+                for(let i=0,len=pList.length;i<len;i++){
+                    // 重置样式,防止粘贴复制带来过来的内联样式 
+                    pList[i].style = null
+                    // pList[i].innerText = this.$trim(pList[i].innerText);
+                    if(this.$trim(pList[i].innerText).length){
+                        if(!pList[i].getAttribute("uuid")){
+                            pList[i].setAttribute("uuid","<H><LG>")
+                        }else {
+                            if(i>0 && pList[i].getAttribute("uuid").length > 7 && pList[(i-1)].getAttribute('uuid')===pList[i].getAttribute("uuid")){
+                                pList[i].setAttribute("uuid","<H><LG>")
+                            }
+                        }
+                        if(pList[i].childNodes.length>1){
+                            pList[i].innerHTML = this.$trim(pList[i].innerText).replace(/(&nbsp;)/g,'')
+                        }
+                    }else {
+                        pList[i].setAttribute('uuid','<H><LG>')
                     }
                 }
-              if(pList[i].childNodes.length>1){
-                pList[i].innerHTML = this.$trim(pList[i].innerText).replace(/(&nbsp;)/g,'');
-              }
-            }else {
-                pList[i].setAttribute('uuid','<H><LG>');
             }
-          }
-        }
-        if(e.target.innerHTML.length<1){
-          // 保证父元素中至少存在一个p标签，以此确保换行后新增的标签为p
-          let p = document.createElement('p');
-          p.innerHTML='<br>';
-          p.style = null;
-          parents.insertBefore(p,parents.childNodes[0])
-        }
-      },
-      changeVolume(val){
-        if(this.volumeList.length && val && this.update){
-          this.$confirm('确认调整本章分卷?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-              FetchAuthorHandleBook({
-                chapterid:this.ruleForm.id,
-                volumeid:val,
-                bookid:this.ruleForm.bookId,
-              },'cv').then(json=>{
-                if(json.returnCode===200){
-                  this.$message({
-                    type: 'success',
-                    message: '调整成功!'
-                  });
-                }
-              });
-          }).catch(() => {
-            this.$message({message: '已取消调整'});
-            this.getChapterInfo()
-          });
-        }
-      },
-      preventCopy(e){
-        if(e.keyCode===17 && e.keyCode===72){
-          e.returnValue = false;
-          return false
-        }
-      },
-      // 编辑章节后文本校对
-      collateText(old,fresh){
-        // old、fersh 均为数组 原数组包含uuid
-        fresh = this.ruleForm.chapterContent.replace(/\s*$/,'').split(/\n+\s*/);
-        let contentStr = '';
-        console.log(old)
-        for(let k=0,len=old.length;k<len;k++){
-            if(old[k].content){
-                let perList = [];
-                for(let j=0,len=fresh.length;j<len;j++){
-                    const percent = parseFloat(LevenshteinDistance.init(old[k].content,fresh[j]).get().toFixed(3));
-                    if(percent===1){
-                        contentStr += fresh[j] + old[k].uuid;
-                        fresh.splice(j,1);
-                        break;
-                    }else{
-                        perList.push(percent);
-                        if(j===fresh.length-1){
-                            let max = Math.max.apply(null,perList);
-                            console.log('最大----',max);
-                            if(max>0.2){
-                                for(let n=0,len=perList.length;n<len;n++){
-                                    if(perList[n]===max){
-                                      contentStr += fresh[n] + old[k].uuid;
-                                      fresh.splice(n,1);
-                                      break;
-                                    }else{
-                                      console.log(n,fresh[n]);
-                                      contentStr += fresh[n] + '<H><XG>';
-                                      // fresh.splice(n,1);
-                                      // break;
+            if(e.target.innerHTML.length<1){
+                // 保证父元素中至少存在一个p标签，以此确保换行后新增的标签为p
+                let p = document.createElement('p')
+                p.innerHTML='<br>'
+                p.style = null
+                parents.insertBefore(p,parents.childNodes[0])
+            }
+        },
+
+        changeVolume(val) {
+            if(this.volumeList.length && val && this.update){
+                this.$confirm('确认调整本章分卷?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    FetchAuthorHandleBook({
+                        chapterid:this.ruleForm.id,
+                        volumeid:val,
+                        bookid:this.ruleForm.bookId,
+                    },'cv').then(json=>{
+                        if(json.returnCode===200){
+                            this.$message({ type: 'success', message: '调整成功!' })
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({message: '已取消调整'})
+                    this.getChapterInfo()
+                })
+            }
+        },
+
+        preventCopy(e) {
+            if(e.keyCode===17 && e.keyCode===72){
+                e.returnValue = false;
+                return false
+            }
+        },
+
+        // 编辑章节后文本校对
+        collateText(old,fresh){
+            // old、fersh 均为数组 原数组包含uuid
+            fresh = this.ruleForm.chapterContent.replace(/\s*$/,'').split(/\n+\s*/)
+            let contentStr = ''
+            console.log(old)
+            for(let k=0,len=old.length;k<len;k++){
+                if(old[k].content){
+                    let perList = []
+                    for(let j=0,len=fresh.length;j<len;j++){
+                        const percent = parseFloat(LevenshteinDistance.init(old[k].content,fresh[j]).get().toFixed(3))
+                        if(percent===1){
+                            contentStr += fresh[j] + old[k].uuid
+                            fresh.splice(j,1)
+                            break
+                        }else{
+                            perList.push(percent)
+                            if(j===fresh.length-1){
+                                let max = Math.max.apply(null,perList)
+                                console.log('最大----',max)
+                                if(max>0.2){
+                                    for(let n=0,len=perList.length;n<len;n++){
+                                        if(perList[n]===max){
+                                            contentStr += fresh[n] + old[k].uuid
+                                            fresh.splice(n,1)
+                                            break
+                                        }else{
+                                            console.log(n,fresh[n])
+                                            contentStr += fresh[n] + '<H><XG>'
+                                            // fresh.splice(n,1);
+                                            // break;
+                                        }
+                                        console.log('新增元素',n,perList.length)
                                     }
-                                  console.log('新增元素',n,perList.length)
                                 }
                             }
                         }
                     }
                 }
             }
+            console.log(contentStr)
         }
-        console.log(contentStr)
-      }
     
     },
     mounted (){
       let windowWidth = document.body.clientWidth;
-      this.getChapterInfo();
+      this.getChapterInfo()
     },
     watch:{
-      "ruleForm.chapterContent":function (val) {
-        if(this.ruleForm.whetherPublic===1){
-          this.ruleForm.chapterContent = val.replace(/^\s*\n+\s*/,'').replace(/\s*\n+\s*/g,'\n\n　　');
+
+        "ruleForm.chapterContent":function (val) {
+            if(this.ruleForm.whetherPublic===1){
+                this.ruleForm.chapterContent = val.replace(/^\s*\n+\s*/,'').replace(/\s*\n+\s*/g,'\n\n　　')
+            }
+        },
+
+        "ruleForm.authorWords":function (val) {
+            // if (this.$trim(val).length > 200) {
+            //     val = val.substr(0, 200)
+            // }
+            // this.ruleForm.authorWords = val.replace(/^\s*\n+\s*/, '').replace(/\s*\n+\s*/g, '\n\n　　')
         }
-      },
-      "ruleForm.authorWords":function (val) {
-        if (this.$trim(val).length > 100) {
-          val = val.substr(0,100);
-        }
-        this.ruleForm.authorWords = val.replace(/^\s*\n+\s*/, '').replace(/\s*\n+\s*/g, '\n\n　　');
-      }
     },
     computed:{
-      'length':function () {
-        let  sLen = 0;
-        let str = this.ruleForm.chapterContent;
-        try{
-          //先将回车换行符做特殊处理
-          str = str.replace(/(\r\n+|\s+| )+/g,"龘");
-          //处理英文字符数字，连续字母、数字、英文符号视为一个单词
-//          str = str.replace(/[\x00-\xff]/g,"m");
-          //合并字符m，连续字母、数字、英文符号视为一个单词
-//          str = str.replace(/m+/g,"*");
-          //去掉回车换行符
-          str = str.replace(/龘+/g,"");
-          //返回字数
-          sLen += str.length;
-        }catch(e){
-        }
-        this.ruleForm.chapterLength = sLen;
-        if(sLen>20000){
-            this.$message({message:"字数长度不可超过20000！",type:'error'})
-        }
-        return sLen
-      },
-      'isChange':function () {
-        let state = false;
-        if(this.original && !this.original.whetherPublic){
-            if(this.original.releaseTime && this.original.releaseTime > this.original.nowTime){
-                state = false
-            }else {
-                state = true
+        'length': function() {
+            let sLen = 0
+            let str = this.ruleForm.chapterContent
+            try{
+                //先将回车换行符做特殊处理
+                str = str.replace(/(\r\n+|\s+| )+/g,"龘")
+                //处理英文字符数字，连续字母、数字、英文符号视为一个单词
+        //          str = str.replace(/[\x00-\xff]/g,"m");
+                //合并字符m，连续字母、数字、英文符号视为一个单词
+        //          str = str.replace(/m+/g,"*");
+                //去掉回车换行符
+                str = str.replace(/龘+/g,"")
+                //返回字数
+                sLen += str.length
+            }catch(e){}
+            this.ruleForm.chapterLength = sLen
+            if(sLen>20000){
+                this.$message({message:"字数长度不可超过20000！",type:'error'})
             }
+            return sLen
+        },
+
+        'isChange': function() {
+            let state = false
+            if(this.original && !this.original.whetherPublic){
+                if(this.original.releaseTime && this.original.releaseTime > this.original.nowTime){
+                    state = false
+                }else {
+                    state = true
+                }
+            }
+            return state
         }
-        return state
-      }
     }
-  }
+}
 </script>
 <style lang="stylus" type="text/stylus" rel="stylesheet/stylus">
 .el-dialog__body

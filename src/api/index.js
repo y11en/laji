@@ -6,11 +6,11 @@ import qs from 'querystring'
 import Com from '../assets/js/common'
 import { createRouter } from '../router'
 import { createStore } from '../store'
-import axios from 'axios';
+import axios from 'axios'
 import '../assets/js/fun'
 import { Message } from 'element-ui'
-const logRequests = true || !!process.env.DEBUG_API;
-const api = createAPI();
+const logRequests = true || !!process.env.DEBUG_API
+const api = createAPI()
 // const router = createRouter();
 // const store = createStore();
 function createAPI() {
