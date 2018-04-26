@@ -1,7 +1,6 @@
 
 <template>
 <div class="wrapper">
-      <!--<img src="/static/img/web_top.png" width="600" height="400" v-crop:start="cropStart"/>-->
     <el-form :model="bookInfo" :rules="rules" ref="ruleForm" label-width="104px" class="indite-form">
 
         <el-form-item label="作品名称：" prop="bookName">
@@ -115,8 +114,8 @@
         @syncUrl="setCover"
         @close="closeIt"
         :maxWidth="600"
-        :data="{ bookid:bookId }"
-        url="/static/img/defaultcoverimg.jpg"
+        :data="{ bookid: bookId }"
+        :url = "bookInfo.bookImage"
         :aspectRatio="3/4">
     </cropper>
 </div>
@@ -232,9 +231,8 @@ export default{
 
     methods: {
 
-        addNewBook:function (formName) {
+        addNewBook(formName){
             this.$myLoad()
-            console.log(this.$myLoad())
             this.$refs[formName].validate((valid) => {
                 if(valid){
                     let formData = JSON.parse(JSON.stringify(this.bookInfo))
@@ -276,7 +274,7 @@ export default{
                                     this.$nextTick(()=>{
                                         this.$loading().close()
                                     })
-                                    if(res.returnCode===200){
+                                    if(res.returnCode === 200){
                                         this.getLabel()
                                         this.$message('编辑成功')
                                     }
@@ -291,19 +289,20 @@ export default{
                 }else{
                     this.$nextTick(()=>{
                         this.$loading().close()
-                    });
+                    })
                     this.$message({ message:"请检查输入信息是否完整！", type:'warning' })
                 }
             })
         },
 
         getLabel() {
+            // 请求作品标签、作品分类
             FetchGetBookInfo('', 'label').then( json => {
-                const labelList = json.data.booklablesList
+                this.bookLabelList = json.data.booklablesList
                 this.classList = json.data.classificationList
-                this.bookLabelList = labelList
+                // 如果是修改信息，请求书籍信息
                 if(this.$route.name==='EditBook'){
-                    FetchGetBookInfo(this.$route.params.bid,'book').then(json2=>{
+                    FetchGetBookInfo(this.$route.params.bid, 'book').then(json2=>{
                         if(json2.returnCode===200){
                             let arr = []
                             json2.data.bookLabId.split(",").map((item) => {
@@ -320,7 +319,7 @@ export default{
                         }
                     })
                 }
-            });
+            })
         },
 
         setCover(url){
@@ -352,7 +351,7 @@ export default{
     },
 
     watch: {
-        "$store.state.userInfo":function () {
+        "$store.state.userInfo": function () {
             this.bookInfo.bookWriterId = this.$store.state.userInfo.userId
         }
     }

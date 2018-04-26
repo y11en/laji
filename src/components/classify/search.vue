@@ -25,7 +25,7 @@
             <div class="search-item-cover">
               <router-link :to="'/book/'+item.bookId">
                 <img :src="item.bookImage" :alt="item.bookName">
-                <i v-if="item.bookAuthorization===2||item.bookAuthorization===3" class="zdy-icon__sign">签约</i>
+                <i v-if="item.bookAuthorization===1||item.bookAuthorization===2" class="zdy-icon__sign">签约</i>
               </router-link>
             </div>
             <div class="search-main">

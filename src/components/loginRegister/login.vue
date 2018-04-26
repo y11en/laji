@@ -66,8 +66,8 @@
               subData.userPassword = this.$md5(subData.userPassword);
               FetchUserLogin(subData).then(res=>{
                   if(res.returnCode===200){
-                    this.$store.commit("SET_USER_INFO",res.data);
-                    this.$cookie('user_id',res.data.userId);
+                    this.$store.commit("SET_USER_INFO", res.data);
+                    this.$cookie('user_id', res.data.userId);
                     this.$message({message:'登录成功',type:'success',duration:1500});
                     setTimeout(() => {
                       if(this.$route.query.redirect!==undefined){

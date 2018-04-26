@@ -14,101 +14,95 @@ const api = createAPI()
 // const router = createRouter();
 // const store = createStore();
 function createAPI() {
-  let api = {};
-  api.onServer = true;
+  let api = {}
+  api.onServer = true
   api.cachedItems = LRU({
     max: 1000,
     maxAge: 1000 * 60 * 5 // 2 min cache
-  });
-  return api;
+  })
+  return api
 }
 
-function checkTxt(val,len) {
-  if(Com.regEmoji(val)){
-    Message({message:"内容不可包含emoji表情图",type:'warning'});
-    return false
-  }else if(Com.trim(val).length>len){
-    Message({message:"评论内容长度不得超过"+len+"字符",type:'warning'});
-    return false
-  }else if(!Com.trim(val).length){
-    Message({message:"请输入内容",type:'warning'});
-    return false
-  }
-  return true
+function checkTxt(val, len) {
+    if(Com.regEmoji(val)){
+        Message({message:"内容不可包含emoji表情图", type:'warning'})
+        return false
+    }else if(Com.trim(val).length>len){
+        Message({message:"评论内容长度不得超过"+len+"字符", type:'warning'})
+        return false
+    }else if(!Com.trim(val).length){
+        Message({message:"请输入内容", type:'warning'})
+        return false
+    }
+    return true
 }
 
 // warm the front page cache every 15 min
 // make sure to do this only once across all requests
 
 function fetch(child,data,type,tip=true) {
-    let format = '';
-    let isCache = false;
+    let format = ''
+    let isCache = false
     const cacheList = [
-      '/indexdataload',
-      '/sys-hotwords',
-      '/getMaxNewChapterVOList',
-      '/stacks-hotLable',
-      '/sysgetNoticeById',
-      '/sys-welfareBulletin',
-      '/stacks-changxiaobang',
-      '/ranking-classification'
-    ];
+        '/indexdataload',
+        '/sys-hotwords',
+        '/getMaxNewChapterVOList',
+        '/stacks-hotLable',
+        '/sysgetNoticeById',
+        '/sys-welfareBulletin',
+        '/stacks-changxiaobang',
+        '/ranking-classification'
+    ]
     for(let n=0,len=cacheList.length;n<len;n++){
-      if(child===cacheList[n]){
-        isCache = true
-      }
+        if(child===cacheList[n]){
+            isCache = true
+        }
     }
 
     const config = {
-      url:child,
-      baseURL:'https://lajixs.com/api',
-    //   baseURL:'http://192.168.0.136:8081/api',
-      transformRequest: [function (data) {
-        return qs.stringify(data);
-      }],
-      headers:{
-        "Content-Type":"application/x-www-form-urlencoded"
-      },
-      withCredentials:true
-    };
+        url:child,
+          baseURL:'https://lajixs.com/api',
+        // baseURL:'http://192.168.0.136:8081/api',
+        transformRequest: [function (data) {
+            return qs.stringify(data)
+        }],
+        headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+        withCredentials: true
+    }
     if(typeof data !=='string'){
-      if(type==='get'){
-        config.params = data
-      }else {
-        config.data = data
-      }
+        if(type==='get'){
+            config.params = data
+        }else {
+            config.data = data
+        }
     }else {
-      tip = type;
-      type = data;
+        tip = type
+        type = data
     }
     if(typeof type!=='string'){ type = 'post' }
-    config.method = type;
-    // logRequests && console.log(`fetching ${child}...`);
-    const cache = api.cachedItems;
+    config.method = type
+    const cache = api.cachedItems
     if (cache && cache.has(child) && isCache) {
-        // logRequests && console.log(`cache hit for ${child}.`);
         return Promise.resolve(cache.get(child))
     } else {
         return new Promise((resolve, reject) => {
-          axios(config).then((res)=>{
-            const val = res.data;
-            if (val) val.__lastUpdated = Date.now();
-            if(isCache){
-              cache && cache.set(child, val);
-            }
-            // logRequests && console.log(`fetched ${child}.`);
-            resolve(val);
-            if(res.data.returnCode!==200 && tip){
-              Message({message:res.data.msg,type:'warning'})
-            }
-          },reject).catch(reject)
-
+            axios(config).then((res)=>{
+                const val = res.data
+                if (val) val.__lastUpdated = Date.now()
+                if(isCache){
+                    cache && cache.set(child, val)
+                }
+                resolve(val)
+                if(res.data.returnCode!==200 && tip){
+                    Message({message:res.data.msg,type:'warning'})
+                }
+            },reject).catch(reject)
         })
     }
 }
 
 export function aycn(url,data,type,tip) {
-  return fetch(url,data,type,tip)
+    return fetch(url,data,type,tip)
 }
 
 
@@ -438,9 +432,9 @@ export function FetchAuthorHandleBook(data,type) {
 
 // 获取书籍、章节、分卷信息
 
-export function FetchGetBookInfo(id,type) {
-  let url,data,way='post';
-  data = { bookid : id };
+export function FetchGetBookInfo(id, type) {
+  let url, data, way='post'
+  data = { bookid : id }
   switch (type){
     case 'rank':
       url = '/ranking-book';

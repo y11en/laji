@@ -1,16 +1,15 @@
-/**
- * Created by Administrator on 2018/3/20.
- */
 import Vue from 'vue'
 import App from './App.vue'
+import { createRouter } from './router'
+import { createStore } from './store'
+import { sync } from 'vuex-router-sync'
+
+
 import './assets/js/common'
 import Consume from './components/custom/src/consume.vue'
 import filter from './filter'
 import myIcon from './components/custom/icon.vue'
 import Hint from './components/common/hint.vue'
-import { createStore } from './store'
-import { createRouter } from './router'
-import { sync } from 'vuex-router-sync'
 import titleMixin from './util/title'
 import * as filters from './util/filters'
 

@@ -196,7 +196,7 @@
                 </el-button>
                 <el-button class="btn share-wrapper" :style="{backgroundColor:intercalate[setData.theme].bgColor,borderColor:intercalate[setData.theme].brColor}">
                   <a class="clr9">
-                    <div class="share" >
+                    <div class="share">
                       <i></i><p>分享</p>
                     </div>
                   </a>
@@ -382,7 +382,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
               let desc = json.data.bookInfo.bookName + '是辣鸡小说网作者'+json.data.bookInfo.writerName+'全力打造的一部'+json.data.bookInfo.classificationName+'小说，辣鸡小说第一时间提供'+json.data.bookInfo.bookName+'最新章节，'+json.data.bookInfo.bookName+'全文阅读请上辣鸡小说';
     
               json.data.bookInfo.rewardCount = json.data.rewardTotalNumber;
-              json.data.chapterInfo.authorWords = json.data.chapterInfo.authorWords.replace(/\s*\n+\s*/g,'<br>　　');
+              json.data.chapterInfo.authorWords = json.data.chapterInfo.authorWords && json.data.chapterInfo.authorWords.replace(/\s*\n+\s*/g,'<br>　　');
               this.bookInfo = json.data.bookInfo;
               this.countList = json.data.countInfos;
               let data = this.formatTxt({content:json.data.chapterInfo.chapterContent,count:this.countList});

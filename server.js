@@ -148,13 +148,13 @@ function render (req, res) {
 // );
 
 
-// const SSLPORT = 80;
+const SSLPORT = 80;
 
-// const httpsServer = https.createServer(credentials, app).listen(SSLPORT, function() {
-//   console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
-// });
+const httpsServer = https.createServer(credentials, app).listen(SSLPORT, function() {
+  console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
+});
 
-http.createServer(app, credentials).listen(80)
+// http.createServer(app, credentials).listen(80)
 
 app.get("*",render)
 // app.get('*', isProd ? render : (req, res) => {

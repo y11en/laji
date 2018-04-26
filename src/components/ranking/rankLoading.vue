@@ -21,7 +21,7 @@
               <router-link :to="'/book/'+item.bookId">
                 <img class="bookCover" :src="item.bookImage" :alt="item.bookName">
                 <!--<span  class="sign-icon">签约</span>-->
-                <i v-if="item.bookAuthorization==2||item.bookAuthorization==3" class="zdy-icon__sign small">签约</i>
+                <i v-if="item.bookAuthorization===1||item.bookAuthorization===2" class="zdy-icon__sign small">签约</i>
               </router-link>
               <div class="rc-bookInfo">
                 <div class="info-top">

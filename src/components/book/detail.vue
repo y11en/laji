@@ -16,7 +16,7 @@
           <div class="bookWrap clear">
             <div class="bw-left">
               <img class="cover" :src="bookDetail.bookListInfo.bookImage" :alt="bookDetail.bookListInfo.bookName">
-              <i v-if="bookDetail.bookListInfo.bookAuthorization===2||bookDetail.bookListInfo.bookAuthorization===3" class="zdy-icon__sign">签约</i>
+              <i v-if="bookDetail.bookListInfo.bookAuthorization===1||bookDetail.bookListInfo.bookAuthorization===2" class="zdy-icon__sign">签约</i>
             </div>
             <div class="bw-right">
               <div class="b-title">
