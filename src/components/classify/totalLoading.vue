@@ -66,7 +66,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-  import { FetchAddBookShelf } from '../../api'
+  import * as service from '../../api/service'
   import { mapState } from 'vuex'
     export default{
       data() {
@@ -79,7 +79,7 @@
         },
         addBookShelf(bid,name,index){
           this.$reLogin();
-          FetchAddBookShelf(bid,this.$store.state.userInfo.pseudonym,name).then(json=>{
+          service.FetchAddBookShelf(bid,this.$store.state.userInfo.pseudonym,name).then(json=>{
             if(json.returnCode===200){
               this.$message(json.msg);
               this.dataList.list[index].collectionStatus = this.dataList.list[index].collectionStatus?0:1;
@@ -112,7 +112,7 @@
       computed:{
         ...mapState([
             'stackList',
-           'once'
+        //    'once'
         ])
       }
     }

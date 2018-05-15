@@ -344,7 +344,7 @@
 <script type="text/ecmascript-6">
   import Vue from 'vue'
   import CarouseRoll from '../carousel/caroual_rec.vue'
-  import { FetchUserGift,FetchUpdateInfo,FetchBookDetailData,FetchBookCommentReply,FetchCommentLaud,FetchReplyBookComment,FetchAddBookComment,FetchAddBookShelf } from '../../api'
+  import * as service from '../../api/service'
   import { mapGetters,mapState } from 'vuex'
   let ERR_OK = 200;
   let ERR_NO = 400;
@@ -395,7 +395,7 @@
         },
 //        书评回复列表
         pageHandler(page,index) {
-            FetchBookCommentReply(this.bookCommentList.list[index].id,page).then(res=>{
+            service.FetchBookCommentReply(this.bookCommentList.list[index].id,page).then(res=>{
                 if(res.returnCode===ERR_OK){
                   this.$set(this.bookCommentList.list[index],'childList',res.data)
                 }
@@ -442,19 +442,20 @@
             if(!this.$cookie('user_id')){
               this.$router.push({path:'/login',query:{ redirect:this.$route.path }});
               return false
+            }else{
+                service.FetchAddBookComment({
+                    bookId:this.bookDetail.bookListInfo.bookId,
+                    bookName:this.bookDetail.bookListInfo.bookName,
+                    userName:this.$store.state.userInfo.pseudonym,
+                    commentContext:this.commentText
+                }).then(json=>{
+                    if(json.returnCode === ERR_OK){
+                        this.$message("评论成功！");
+                    this.commentText = '';
+                    this.handleCurrentChange(1)
+                    }
+                })
             }
-            FetchAddBookComment({
-              bookId:this.bookDetail.bookListInfo.bookId,
-              bookName:this.bookDetail.bookListInfo.bookName,
-              userName:this.$store.state.userInfo.pseudonym,
-              commentContext:this.commentText
-            }).then(json=>{
-                if(json.returnCode===ERR_OK){
-                  this.$message("评论成功！");
-                  this.commentText = '';
-                  this.handleCurrentChange(1)
-                }
-            });
         },
 //        回复评论
         addReplyComment(id,index){
@@ -462,7 +463,7 @@
               this.$router.push({path:'/login',query:{ redirect:this.$route.path }});
               return false
             }
-            FetchReplyBookComment({
+            service.FetchReplyBookComment({
               bookid:this.bookDetail.bookListInfo.bookId,
               bookName:this.bookDetail.bookListInfo.bookName,
               commentId:id,
@@ -484,7 +485,7 @@
             this.$router.push({path:'/login',query:{ redirect:this.$route.path }});
             return false
           }
-          FetchCommentLaud(this.bookCommentList.list[index].id).then(json=>{
+          service.FetchCommentLaud(this.bookCommentList.list[index].id).then(json=>{
                 if(json.returnCode===ERR_OK){
                     this.$message(this.bookCommentList.list[index].isthumbs?'取消成功':'点赞成功');
                     if(this.page===1){
@@ -507,7 +508,7 @@
             this.$router.push({path:'/login',query:{ redirect:this.$route.path }});
             return false
           }
-          FetchUpdateInfo('add',this.$cookie('user_id'),id,name).then(json=>{
+          service.FetchUpdateInfo('add',this.$cookie('user_id'),id,name).then(json=>{
             if(json.returnCode===ERR_OK){
               this.$message("关注成功");
               this.handleCurrentChange(this.page)
@@ -520,7 +521,7 @@
             this.$router.push({path:'/login',query:{ redirect:this.$route.path }});
             return false
           }
-          FetchAddBookShelf(this.bookDetail.bookListInfo.bookId,this.$store.state.userInfo.pseudonym,this.bookDetail.bookListInfo.bookName).then(json=>{
+          service.FetchAddBookShelf(this.bookDetail.bookListInfo.bookId,this.$store.state.userInfo.pseudonym,this.bookDetail.bookListInfo.bookName).then(json=>{
             if(json.returnCode===200){
                 this.bookDetail.bookListInfo.collectionStatus = (this.bookDetail.bookListInfo.collectionStatus?0:1);
                 this.$message(json.msg)
@@ -561,9 +562,9 @@
       },
       mounted(){
         this.onceShow = true
-        if(!this.once){
+        // if(!this.once){
           this.$store.dispatch('FETCH_BOOK_DETAIL',{ bid:this.$route.params.bid })
-        }
+        // }
       },
       watch:{
         page:function (val,old) {

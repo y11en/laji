@@ -1,55 +1,38 @@
-/**
- * Created by Administrator on 2017/9/18.
- */
-import Com from '../assets/js/common'
-import {
-  FetchIndexData,
-  FetchRankData,
-  FetchIndexLatest,
-  FetchIndexSign,
-  FetchStackListData,
-  FetchBookDetailData,
-  FetchChapterList,
-  FetchBookCommentList,
-  FetchBookCommentReply,
-  FetchBookCommentHot,
-  FetchSearchHotWords,
-  FetchBookClassName,
-  FetchBookLabel,
-  FetchBookRankSell,
-  FetchAuthorWelfare,
-  FetchFreshenInfo,
-  FetchAuthorChapterList,
-  FetchExit,
-  FetchUserMessage,
-} from '../api'
+import * as fun from '../api/fun'
+import * as service from '../api/service'
 import { createRouter } from '../router'
-const router = createRouter();
-import { Message,MessageBox } from 'element-ui'
-const $alert = MessageBox.alert;
+const router = createRouter()
+import { Message, MessageBox } from 'element-ui'
+const $alert = MessageBox.alert
 
 export default {
   // 网站首页数据
   FETCH_INDEX_DATA:({commit})=>{
-   return FetchIndexData().then(data=>{
+   return service.FetchIndexData().then(data=>{
        data.data.bookBatch = data.data.homePageRecommendedByClassFuction.slice(0,6); //          分类推荐
        data.data.newBook = data.data.newBookRecommendedList.slice(0,10);  //          新书推荐
        commit("SET_INDEX_DATA",{total:data})
      }).then(()=>{
-     FetchIndexLatest().then(data=>
+     service.FetchIndexLatest().then(data=>
        commit("SET_INDEX_DATA",{latest:data}) //最新更新、最新签约
      )
    }).then(()=>{
-     FetchIndexSign().then(data=>{
+     service.FetchIndexSign().then(data=>{
        commit("SET_INDEX_DATA",{sign:data})
      })
    })
 
   },
 
+
+  checkLoginState: () => {
+    return service.checkLoginState()
+          .then(res => res.data)
+},
+
   // 网站排行榜数据获取
   FETCH_RANK_DATA:({commit},{type,page})=>{
-    return FetchRankData().then(data=>{
+    return service.FetchRankData().then(data=>{
       commit("SET_RANK_DATA",data)
     })
   },
@@ -57,14 +40,14 @@ export default {
   // 书籍详情页
   FETCH_BOOK_DETAIL:({commit,dispatch},{bid})=>{
    commit('SET_LOADING',true);
-   return FetchBookDetailData(bid).then(data=>{
+   return service.FetchBookDetailData(bid).then(data=>{
      commit("SET_LOADING",false);
      if(data.returnCode===2000){
        data.data = {};
        data.data.bookListInfo = ''
      }else if(data.returnCode===200) {
        data.data.bookListInfo.bookIntroduction = data.data.bookListInfo.bookIntroduction.replace(/\s*\n+\s*/g,"<br>　　");
-       data.data.bookListInfo.lastChapter = Com.ResetChapterTxt(data.data.lastChapterView.chapterContent);
+       data.data.bookListInfo.lastChapter = fun.ResetChapterTxt(data.data.lastChapterView.chapterContent);
        dispatch("FETCH_COMMENT_LIST",{ bid,page:1 })
      }
       commit("SET_BOOK_DETAIL",data)
@@ -109,7 +92,7 @@ export default {
 
   // 章节列表
   FETCH_CHAPTER_LIST:({commit},{bid,type})=>{
-    return FetchChapterList(bid).then(data=>{
+    return service.FetchChapterList(bid).then(data=>{
       let arr=[],list,active = [],obj = {},newArr=[];
       list = data.data.chapterInfo;
       if(data.returnCode===200){
@@ -151,9 +134,9 @@ export default {
     page = Number(page) || 1;
     switch (page){
       case 1:{
-        return FetchBookCommentHot(bid).then(data1=>{
+        return service.FetchBookCommentHot(bid).then(data1=>{
           if(data1.returnCode===200){
-            return FetchBookCommentList(bid,page).then(data2=>{
+            return service.FetchBookCommentList(bid,page).then(data2=>{
                 data1.data.forEach((item)=>{
                   item.isHot = true;
                   for(let k=0,len=data2.data.list.length;k<len;k++){
@@ -172,7 +155,7 @@ export default {
         });
       }
       default:{
-        return FetchBookCommentList(bid,page).then(data=>{
+        return service.FetchBookCommentList(bid,page).then(data=>{
           commit("SET_BOOK_COMMENT_LIST",data)
         })
       }
@@ -182,7 +165,7 @@ export default {
 
   // 热评
   FETCH_COMMENT_HOT:({commit},{bid})=>{
-    return FetchBookCommentHot(bid).then(data=>{
+    return service.FetchBookCommentHot(bid).then(data=>{
       commit("SET_BOOK_COMMENT_HOT",data)
     })
   },
@@ -191,14 +174,14 @@ export default {
   FETCH_COMMENT_REPLY:({ commit,state },{index,page})=>{
     const basic = state.bookCommentList.data.list[index];
     page = page || 1;
-    return FetchBookCommentReply(basic.id,page).then(data=>{
+    return service.FetchBookCommentReply(basic.id,page).then(data=>{
       commit("SET_BOOK_COMMENT_REPLY",{data,index})
     })
   },
 
   // 搜索热词
   FETCH_SEARCH_HOT_WORDS:({ commit })=>{
-    return FetchSearchHotWords().then(data=>{
+    return service.FetchSearchHotWords().then(data=>{
       commit("SET_SEARCH_HOT_WORDS",data)
     })
   },
@@ -207,24 +190,24 @@ export default {
 
   //书籍分类
   FETCH_BOOK_CLASS_NAME:({ commit })=>{
-    return FetchBookClassName().then(data=>{
+    return service.FetchBookClassName().then(data=>{
       commit("SET_BOOK_CLASS_NAME",data)
     })
   },
 
   FETCH_STACK_LIST_DATA:({ commit },v) => {
-    return FetchStackListData(v.op1,v.op2,v.op3,v.op4,v.op5,v.page,v.op6).then(data => {
+    return service.FetchStackListData(v.op1,v.op2,v.op3,v.op4,v.op5,v.page,v.op6).then(data => {
       commit("SET_STACK_LIST_DATA",data)
     })
   },
 
   FETCH_BOOK_RANK_COMMON:({ commit })=>{
     // 畅销榜
-    return FetchBookRankSell().then(data=>{
+    return service.FetchBookRankSell().then(data=>{
       commit("SET_STACK_SELL",data)
     }).then(()=>{
       // 热门标签
-      return FetchBookLabel().then(data=>{
+      return service.FetchBookLabel().then(data=>{
         commit("SET_STACK_HOT_LABEL",data)
       })
     })
@@ -232,7 +215,7 @@ export default {
 
   // 作者福利
   FETCH_AUTHOR_WELFARE:({ commit })=>{
-    return FetchAuthorWelfare().then(data=>{
+    return service.FetchAuthorWelfare().then(data=>{
       data.data.forEach((item)=>{
         item.content = item.content.replace(/\n+/g,'<br>')
       });
@@ -243,12 +226,12 @@ export default {
   // 更新用户信息
 
   FETCH_FRESHEN_INFO:({ commit,dispatch })=>{
-    return FetchFreshenInfo().then(res=>{
+    return service.FetchFreshenInfo().then(res=>{
       if(res.returnCode===200){
-        Com.cookie('user_id',res.data.userId);
+        fun.cookie('user_id',res.data.userId);
         dispatch("FETCH_USER_MESSAGE")
       }else {
-        Com.cookie('user_id','',-1);
+        fun.cookie('user_id','',-1);
       }
       commit("SET_USER_INFO",res.data);
     })
@@ -256,7 +239,7 @@ export default {
 
 
 FETCH_USER_MESSAGE:({ commit })=>{
-    return FetchUserMessage().then(res=>{
+    return service.FetchUserMessage().then(res=>{
       let data = {};
       if(res.returnCode===200){
         res.data.total = res.data.userMessageCount + res.data.userCommentReplyCount;
@@ -273,9 +256,9 @@ FETCH_USER_MESSAGE:({ commit })=>{
 
   FETCH_EXIT:({commit,state},type)=>{
     const mod = router.name==='modifyPage' || router.name==='findPage';
-    const exit =()=> FetchExit().then(res=>{
+    const exit =()=> service.FetchExit().then(res=>{
       if(res.returnCode===200){
-        Com.cookie('user_id','',-1);
+        fun.cookie('user_id','',-1);
         commit('SET_USER_INFO');
         if(!type){
           if(mod){
@@ -304,7 +287,7 @@ FETCH_USER_MESSAGE:({ commit })=>{
   // 忘记密码
 
   FETCH_AUTHOR_CHAPTER_LIST:({commit},id)=>{
-    return FetchAuthorChapterList(id).then(res=>{
+    return service.FetchAuthorChapterList(id).then(res=>{
       let arr = [];
       if(res.returnCode===200){
         res.data.reverse().forEach((item)=>{
@@ -316,4 +299,39 @@ FETCH_USER_MESSAGE:({ commit })=>{
       commit('SET_AUTHOR_CHAPTER_LIST',arr)
     })
   },
+
+    FetchCheckLoginState: () => {
+        const res = service.FetchCheckLoginState()
+        return res
+    },
+
+    FetchApplicantAuthor: ({}, data) => {
+        const res = service.FetchApplicantAuthor(data)
+        return res
+    },
+
+    FetchIsTop: ({}, data) => {
+        const res = service.FetchIsTop(data)
+        return res
+    },
+
+    FetchClearUserInfo: () => {
+        const res = service.FetchClearUserInfo()
+        return res
+    },
+
+    FetchPersonUpdateInfo: ({}, data) => {
+        const res = service.FetchPersonUpdateInfo(data)
+        return res
+    },
+
+    FetchSendmessage: ({}, data) => {
+        const res = service.FetchSendmessage(data)
+        return res
+    },
+
+    FetchUpdatemessage: ({}, data) => {
+        const res = service.FetchUpdatemessage(data)
+        return res
+    }
 }

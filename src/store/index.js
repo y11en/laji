@@ -10,7 +10,7 @@ import modules from './modules/index'
 Vue.use(Vuex);
 
 const state = {
-  once:false,
+//   once:false,
   loading:false,  //数据请求状态
   userInfo:{}, //用户信息
   message:{}, //用户未读消息数目

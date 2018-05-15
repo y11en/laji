@@ -48,7 +48,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetUserData } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data(){
         return {
@@ -60,7 +60,7 @@
           this.getFansList(page)
         },
         getFansList(page){
-            FetchGetUserData(page,'fans').then(json=>{
+            service.FetchGetUserData(page,'fans').then(json=>{
               if(json.returnCode===200){
                 this.fansList = json.data
               }

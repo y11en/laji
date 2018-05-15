@@ -17,7 +17,7 @@
 
 <script type="text/ecmascript-6">
   import Comment from '../comment/zxy-comment.vue'
-  import { FetchGetUserData,FetchGetPrattle,FetchHandleUserInfo } from '../../api'
+  import * as service from '../../api/service'
     export default{
       components:{
         'zxy-comment':Comment
@@ -31,7 +31,7 @@
       methods:{
 //          获取我的书评列表
          getCommentBook(page){
-             FetchGetUserData(page,'bcom',this.$cookie("user_id")).then(json=>{
+             service.FetchGetUserData(page,'bcom',this.$cookie("user_id")).then(json=>{
                if(json.returnCode===200){
                  this.commentBook = json.data
                }
@@ -39,7 +39,7 @@
          },
 //        获取我的吐槽列表
         getCommentChapter(page){
-             FetchGetPrattle(this.$cookie('user_id'),page,'user').then(json=>{
+             service.FetchGetPrattle(this.$cookie('user_id'),page,'user').then(json=>{
                  if(json.returnCode===200){
                     this.commentChapter = json.data
                  }
@@ -58,7 +58,7 @@
                  cancelButtonText:'否',
                  callback: action => {
                    if(action==='confirm'){
-                     FetchHandleUserInfo(this.commentBook.list[index].id,t).then(json=>{
+                     service.FetchHandleUserInfo(this.commentBook.list[index].id,t).then(json=>{
                        if(json.returnCode===200){
                          this.$message('删除成功');
                          this.getCommentBook(this.$route.params.page)
@@ -70,7 +70,7 @@
               }else if(type==='page1'){
                   this.$router.push({params:{page:index}});
               }else if(type==='zan'){
-                  FetchHandleUserInfo(this.commentBook.list[index].id,'bal').then(json=>{
+                  service.FetchHandleUserInfo(this.commentBook.list[index].id,'bal').then(json=>{
                     if(json.returnCode===200){
                       this.$message(this.commentBook.list[index].isthumbs?'取消成功':'点赞成功');
                       this.getCommentBook(this.commentBook.pageNum)
@@ -87,7 +87,7 @@
                    cancelButtonText:'否',
                    callback: action => {
                      if(action==='confirm'){
-                       FetchHandleUserInfo(this.commentChapter.list[index].id,'dg').then(json=>{
+                       service.FetchHandleUserInfo(this.commentChapter.list[index].id,'dg').then(json=>{
                          if(json.returnCode===200){
                            this.$message('删除成功');
                            this.getCommentChapter(this.commentChapter.pageNum)
@@ -100,7 +100,7 @@
                }else if(type==='page1'){
                  this.getCommentChapter(index)
                }else if(type==='zan'){
-                   FetchHandleUserInfo(this.commentChapter.list[index].id,'pal').then(json=>{
+                   service.FetchHandleUserInfo(this.commentChapter.list[index].id,'pal').then(json=>{
                        if(json.returnCode===200){
                          this.$message(this.commentChapter.list[index].isthumbs?'取消成功':'点赞成功');
                          this.getCommentChapter(this.commentChapter.pageNum)

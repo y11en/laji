@@ -94,7 +94,7 @@
 </div>
 </template>
 <script type="text/ecmascript-6">
-import { FetchGetBookInfo,FetchAuthorHandleBook ,FetchNetTime,FetchCheckName } from '../../api'
+import * as service from '../../api/service'
   export default {
     data() {
         let validateContent = (rule,value,callback) =>{
@@ -124,7 +124,7 @@ import { FetchGetBookInfo,FetchAuthorHandleBook ,FetchNetTime,FetchCheckName } f
                 if(value.length>20){
                     callback(new Error("总长度不可超过20个字符"))
                 }else {
-                    FetchCheckName({ volumeName:value, bookid:this.ruleForm.bookId },'volume').then(json=>{
+                    service.FetchCheckName({ volumeName:value, bookid:this.ruleForm.bookId },'volume').then(json=>{
                         if(json.returnCode===200) {
                             callback()
                         }else {
@@ -145,7 +145,7 @@ import { FetchGetBookInfo,FetchAuthorHandleBook ,FetchNetTime,FetchCheckName } f
                     callback(new Error('章节名长度不可超过20字符'))
                     return false
                 }
-                FetchCheckName({ chapterName:value, bookId:this.$route.params.bid },'chapter').then(json=>{
+                service.FetchCheckName({ chapterName:value, bookId:this.$route.params.bid },'chapter').then(json=>{
                     if(json.returnCode===200){
                         callback()
                     }else{
@@ -276,14 +276,14 @@ import { FetchGetBookInfo,FetchAuthorHandleBook ,FetchNetTime,FetchCheckName } f
             // 首先获取网络时间
             let cloneData = JSON.parse(JSON.stringify(this.ruleForm))
             cloneData.chapterContent = this.$trim(cloneData.chapterContent).replace(/\n+\s+/g,'<H><LG>')+"<H><LG>"
-            FetchNetTime().then(time=>{
+            service.FetchNetTime().then(time=>{
                 if(time.returnCode===200){
                     if(cloneData.releaseTime){
                         cloneData.releaseTime = this.$formTime(cloneData.releaseTime,"long")
                     }else {
                         cloneData.releaseTime = this.$formTime(time.data.beijing,'long')
                     }
-                    FetchAuthorHandleBook(cloneData,'ac').then(json=>{
+                    service.FetchAuthorHandleBook(cloneData,'ac').then(json=>{
                         this.$nextTick(()=>{
                             this.$loading().close()
                         })
@@ -314,7 +314,7 @@ import { FetchGetBookInfo,FetchAuthorHandleBook ,FetchNetTime,FetchCheckName } f
         addNewVolume(formName){
             this.$refs[formName].validate((valid) => {
                 if(valid){
-                    FetchAuthorHandleBook({ volumeName:this.volumeForm.volumeName, bookName:this.ruleForm.bookTitle, bookid:this.$route.params.bid },'av').then(json=>{
+                    service.FetchAuthorHandleBook({ volumeName:this.volumeForm.volumeName, bookName:this.ruleForm.bookTitle, bookid:this.$route.params.bid },'av').then(json=>{
                         if(json.returnCode === 200) {
                             this.dialogFormVisible = false
                             this.$message("添加成功")
@@ -331,13 +331,13 @@ import { FetchGetBookInfo,FetchAuthorHandleBook ,FetchNetTime,FetchCheckName } f
 
         // 章节信息回显
         getChapterInfo(){
-            FetchGetBookInfo(this.$route.params.bid,'book').then(json=>{
+            service.FetchGetBookInfo(this.$route.params.bid,'book').then(json=>{
                 if(json.returnCode===200){
                     this.ruleForm.bookTitle = json.data.bookName
                     this.ruleForm.bookId = json.data.bookId
                     this.isVip = json.data.bookCheckStatus
                     this.ruleForm.chapterIsvip = this.isVip === 2 ? 1 : 0
-                    FetchGetBookInfo(this.$route.params.bid,'volume').then(json2=>{
+                    service.FetchGetBookInfo(this.$route.params.bid,'volume').then(json2=>{
                         if(json2.returnCode===200 && json2.data.length){
                             this.volumeList = json2.data.reverse()
                             this.ruleForm.volumeId = this.volumeList[0].id

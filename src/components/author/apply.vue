@@ -134,8 +134,7 @@
   import areaPicker from '../../components/common/area-picker.vue'
   import areadata from 'china-area-data'
   import { mapState } from 'vuex'
-  import { aycn } from '../../api'
-  import Common from '../../assets/js/common'
+  import * as Common from '../../api/fun'
     export default{
       components:{ areaPicker },
       data() {
@@ -305,7 +304,7 @@
             if (valid) {
               let data = JSON.parse(JSON.stringify(this.applyInfo));
               data.userBorndate = Common.formatTime(data.userBorndate);
-              aycn('/person-applicantAuthor',data).then(json=>{
+              this.$store.dispatch('FetchApplicantAuthor', data).then(json=>{
                 this.subLoad = false;
                 if(json.returnCode===200){
                   this.active++;

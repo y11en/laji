@@ -197,7 +197,7 @@
 
 <script type="text/ecmascript-6">
   import echarts from 'echarts'
-  import { FetchNetTime,FetchAuthorIncome,FetchLatestMonth } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data(){
             return {
@@ -337,7 +337,7 @@
           },
           getNowDate(){
             if(this.$route.name==='allIncome'){
-              FetchNetTime().then(json=>{
+              service.FetchNetTime().then(json=>{
                 if(json.returnCode===200){
                   let date = new Date(json.data.beijing);
                   let year = date.getFullYear();
@@ -348,7 +348,7 @@
                 }
               });
             }else if(this.$route.name==='monIncome'){
-                FetchLatestMonth().then(time=>{
+                service.FetchLatestMonth().then(time=>{
                   if(time.returnCode===200){
                     this.monthOption2 = {
                       disabledDate(t) {
@@ -382,7 +382,7 @@
                    }
                 }
             };
-            FetchAuthorIncome(type,data()).then(json=>{
+            service.FetchAuthorIncome(type,data()).then(json=>{
               if(json.returnCode===200 || !json.data){
                 if(type==='allIncome' && json.data){
                   json.data.Alldata.forEach((item,index)=>{
@@ -426,7 +426,7 @@
           },
           getChapterDetail(row,page){
               if(this.allDate){
-                  FetchAuthorIncome('chapter',{
+                  service.FetchAuthorIncome('chapter',{
                     startdate:this.allDate[0]+' 00:00:00',
                     enddate:this.allDate[1]+' 23:59:59',
                     bookid:row.bookid,

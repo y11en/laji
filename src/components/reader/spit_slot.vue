@@ -13,7 +13,7 @@
 
 <script type="text/ecmascript-6">
   import Comment from '../comment/zxy-comment.vue'
-  import { FetchGetPrattle,FetchHandleUserInfo } from '../../api'
+  import * as service from '../../api/service'
     export default{
       components:{
         'zxy-comment':Comment
@@ -26,7 +26,7 @@
       methods:{
         getSpitList(){
             let val = this.$route.params;
-            FetchGetPrattle(val.uid,val.page,'user').then(json=>{
+            service.FetchGetPrattle(val.uid,val.page,'user').then(json=>{
               if(json.returnCode===200){
                 this.spitList = json.data
               }
@@ -36,7 +36,7 @@
             if(type==='page1'){
                 this.$router.push({params:{page:index}})
             }else if(type==='zan'){
-                FetchHandleUserInfo(this.spitList.list[index].id,'pal').then(json=>{
+                service.FetchHandleUserInfo(this.spitList.list[index].id,'pal').then(json=>{
                   if(json.returnCode===200){
                     this.$message(this.spitList.list[index].isthumbs?'取消成功':'点赞成功');
                     this.getSpitList(this.spitList.pageNum)

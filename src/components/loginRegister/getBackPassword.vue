@@ -65,7 +65,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { FetchCheckName } from '../../api'
+import md5 from 'md5'
+import * as service from '../../api/service'
 export default{
     data() {
         let checkMobile = (rule, value, callback) => {
@@ -163,7 +164,7 @@ export default{
         nextForm(formName){
             this.$refs[formName].validate((valid)=>{
                 if(valid){
-                    FetchCheckName({
+                    service.FetchCheckName({
                         checkCode:this.modifyList.code,
                         phoneId:this.modifyList.phoneId
                     },'code').then(json=>{
@@ -184,11 +185,11 @@ export default{
                 if (valid) {
                     // 直接修改密码
                     let subData = JSON.parse(JSON.stringify(this.modifyList))
-                    subData.oldPwd = this.$md5(subData.oldPwd)
-                    subData.newPwd = this.$md5(subData.newPwd)
-                    subData.checkPass = this.$md5(subData.checkPass)
+                    subData.oldPwd = md5(subData.oldPwd)
+                    subData.newPwd = md5(subData.newPwd)
+                    subData.checkPass = md5(subData.checkPass)
                     if(this.$route.name==='modifyPage'){
-                        FetchCheckName(subData,'change').then(json=>{
+                        service.FetchCheckName(subData,'change').then(json=>{
                             if(json.returnCode===200){
                                 // 直接修改密码
                                 this.$alert('', '修改成功！您可以重新登录了', {
@@ -211,7 +212,7 @@ export default{
                         })
                     }else {
                         // 忘记密码时修改密码
-                        FetchCheckName(subData,'back').then(json=>{
+                        service.FetchCheckName(subData,'back').then(json=>{
                             if(json.returnCode===200){
                                 this.activeModule = 3
                                 // 直接修改密码
@@ -247,7 +248,7 @@ export default{
         getCode(){
             if(this.modifyList.phoneId){
                 if((/^1[34578]\d{9}$/.test(this.modifyList.phoneId))){
-                    FetchCheckName({
+                    service.FetchCheckName({
                         userMob:this.modifyList.phoneId,
                         type:"findPwd"
                     },'phone').then(json=>{

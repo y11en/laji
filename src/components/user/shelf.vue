@@ -67,7 +67,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetUserData,FetchHandleUserInfo } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data(){
             return{
@@ -79,7 +79,7 @@
       methods:{
         getShelfList(page){
           let type = this.activeTab==='bookshelf'?'shelf':'reLog';
-          FetchGetUserData(page,type,this.$cookie('user_id')).then(json=>{
+          service.FetchGetUserData(page,type,this.$cookie('user_id')).then(json=>{
             if(json.returnCode===200){
               this.shelfList = json.data
             }else if(json.returnCode===500){
@@ -97,7 +97,7 @@
               });
               type = this.activeTab === 'bookshelf'?'ds':'dr';
               if(Darr.length>0){
-                  FetchHandleUserInfo(Darr.toString(),type).then(json=>{
+                  service.FetchHandleUserInfo(Darr.toString(),type).then(json=>{
                     if(json.returnCode===200){
                       this.$message("删除成功");
                       this.getShelfList(this.shelfList.pageNum)

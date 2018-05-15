@@ -59,7 +59,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetBookInfo,FetchAuthorHandleBook } from '../../api'
+  import * as service from '../../api/service'
   export default {
     data() {
       return {
@@ -81,7 +81,7 @@
           }
       },
       getDraftList(){
-        FetchGetBookInfo(this.$route.params.bid,'draft').then(json=>{
+        service.FetchGetBookInfo(this.$route.params.bid,'draft').then(json=>{
           if(json.returnCode===200){
             let allList = [];
             json.data.forEach((item)=>{
@@ -117,7 +117,7 @@
                  cancelButtonText:'否',
                  callback: action => {
                    if(action==='confirm'){
-                       FetchAuthorHandleBook({
+                       service.FetchAuthorHandleBook({
                          chapterid:chapList.toString(),
                          bookid:this.draftList[0].bookId
                        },'dd').then(json=>{

@@ -48,7 +48,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchUserRegister,FetchUserLogin,FetchCheckName } from '../../api'
+import md5 from 'md5'
+  import * as service from '../../api/service'
   export default{
     data() {
       let validateName =(rule,value,callback) => {
@@ -58,7 +59,7 @@
               if(!/^[\u4e00-\u9fa5a-zA-Z0-9]{2,16}$/.test(value)){
                 callback(new Error('正确格式为：长度在2-16之间，只能包含数字、字母、汉字。'));
               }else {
-                FetchCheckName(value,'name').then(json=>{
+                service.FetchCheckName(value,'name').then(json=>{
                   if(json.returnCode===200){
                     callback()
                   }else {
@@ -145,11 +146,11 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
               let subData = JSON.parse(JSON.stringify(this.registerList));
-              subData.userPassword = this.$md5(subData.userPassword);
-            FetchUserRegister(subData).then(json=>{
+              subData.userPassword = md5(subData.userPassword);
+            service.FetchUserRegister(subData).then(json=>{
               if(json.returnCode===200){
                 this.$message({message:"注册成功，2秒后自动登录",type:'success',duration:2000});
-                FetchUserLogin({
+                service.FetchUserLogin({
                   userName:this.registerList.userPhone,
                   userPassword:subData.userPassword,
                   isSave:0,
@@ -199,7 +200,7 @@
             this.$message("请先填写手机号！")
           }else {
             if((/^1[34578]\d{9}$/.test(this.registerList.userPhone))){
-              FetchCheckName({
+              service.FetchCheckName({
                 userMob:this.registerList.userPhone,
                 type:"RegisterPwd"
               },'phone').then(json=>{
@@ -217,6 +218,8 @@
                       clearInterval(this.timer)
                     }
                   },1000);
+                }else if(json.returnCode === 500){
+                    this.$message("该手机已注册过!");
                 }
               })
             }

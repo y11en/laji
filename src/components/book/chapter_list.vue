@@ -5,8 +5,12 @@
         <div class="sub-nav">
           <el-breadcrumb  separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">主页</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{path:'/class_total/'+bookInfo.bookClassificationId+'/0/0/0/0/1/0'}" >{{bookInfo.classificationName}}</el-breadcrumb-item>
-            <el-breadcrumb-item :to="'/book/'+bookInfo.bookId">{{bookInfo.bookName}}</el-breadcrumb-item>
+            <el-breadcrumb-item>
+                <router-link :to="{path:'/class_total/'+bookInfo.bookClassificationId+'/0/0/0/0/1/0'}">{{bookInfo.classificationName}}</router-link>
+            </el-breadcrumb-item>
+            <el-breadcrumb-item>
+                <router-link style="cursor:pointer;" :to="{path:'/book/'+bookInfo.bookId}">{{bookInfo.bookName}}</router-link>
+            </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>

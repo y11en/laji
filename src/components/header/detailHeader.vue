@@ -90,7 +90,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { aycn } from '../../api'
   import { mapState } from 'vuex'
     export default{
       data(){
@@ -104,7 +103,7 @@
       methods: {
         handleCommand1(commend){
           if(commend==='exit'){ //退出账号
-            aycn('/person-ClearUserInfo').then(json=>{
+            this.$store.dispatch('FetchClearUserInfo').then(json=>{
               if(json.returnCode===200){
                 this.$message("退出成功！");
                 this.$cookie('user_id','',-1);

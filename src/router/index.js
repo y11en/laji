@@ -60,12 +60,14 @@ const readerShelf =() => import('../components/reader/bookshelf.vue');
 const readerSpit =() => import('../components/reader/spit_slot.vue');
 const readerReview =() => import('../components/reader/book_review.vue');
 
+const solicit =() => import('../components/solicit.vue');
+
 
 // Vue.prototype.$ajax= Axios;
 Vue.use(Router,VueAxios,Axios);
 Vue.config.productionTip = false;
 const routes = [
-  { path:"*", component: Error },
+//   { path:"*", component: Error },
   { path:'/error/404', component:Error },
 
   { path: '/index', name: 'index', meta:{title:'辣鸡小说'}, component: Home },
@@ -231,6 +233,7 @@ const routes = [
 
   // 网站公告
   { path:'/news/:id', meta:{title:'网站公告-辣鸡小说'}, component: commonNews },
+  
   // 书籍排行榜
   { path:'/rank', meta:{title:'全网书籍排行-辣鸡小说'}, redirect:'/rank/golden/month/1' },
   { path:'/rank/golden/', redirect:'/rank/golden/month/1' },
@@ -261,6 +264,7 @@ const routes = [
   // APP 下载页面
   { path:'/download/app', name:'download', component:Download },
   { path: '/', redirect:'/index' },
+  { path: '/solicit', name: 'solicit', component: solicit }
 ];
 
 

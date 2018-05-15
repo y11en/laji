@@ -12,7 +12,7 @@
 
 <script type="text/ecmascript-6">
   import Comment from '../comment/zxy-comment.vue'
-  import { FetchGetUserData,FetchReplyBookComment } from '../../api'
+  import * as service from '../../api/service'
     export default{
       components:{
         "zxy-comment":Comment
@@ -25,7 +25,7 @@
       methods:{
         //        获取评论信息列表
         getUserComment(page){
-          FetchGetUserData(page,'reCom',this.$route.params.uid).then(json=>{
+          service.FetchGetUserData(page,'reCom',this.$route.params.uid).then(json=>{
             if(json.returnCode===200){
               this.userCommentList = json.data
             }
@@ -50,7 +50,7 @@
             this.getUserComment(this.$route.params.page)
           }else if(type==='Reply'){
             if(this.$trim(index.content).length<100 && this.$trim(index.content).length>0){
-              FetchReplyBookComment({
+              service.FetchReplyBookComment({
                 bookid:this.userCommentList.allCommentList[index.index].bookId,
                 replyCommentsContent:index.content,
                 commentId:this.userCommentList.allCommentList[index.index].id,

@@ -44,7 +44,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchAuthorNotice } from '../../api'
+  import * as service from '../../api/service'
     export default{
         data(){
           return{
@@ -53,7 +53,7 @@
         },
       methods:{
         getNoticeList(page){
-          FetchAuthorNotice(page).then(json=>{
+          service.FetchAuthorNotice(page).then(json=>{
             
             this.noticeList = json.data?json.data:{}
             

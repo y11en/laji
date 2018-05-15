@@ -271,7 +271,7 @@
     </div>
 </template>
 <script type="text/ecmascript-6">
-import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,FetchAddPrattle,FetchGetPrattle,FetchAddRecords,FetchSubscribeChapter,FetchHandleUserInfo } from '../../api'
+import * as service from '../../api/service'
  import Badge from '../custom/badge.vue'
  import BadgeItem from '../custom/badge-item.vue'
  import { mapState, mapActions,mapGetters } from 'vuex'
@@ -376,7 +376,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
       methods:{
 //        获取章节信息
         getChapterInfo(id){
-          FetchReadChapter({chapterId:id,readType:1}).then(json=>{
+          service.FetchReadChapter({chapterId:id,readType:1}).then(json=>{
             this.$store.commit("SET_BOOK_DETAIL",{data:json.data})
             if(json.data && json.returnCode!==1000){
               let desc = json.data.bookInfo.bookName + '是辣鸡小说网作者'+json.data.bookInfo.writerName+'全力打造的一部'+json.data.bookInfo.classificationName+'小说，辣鸡小说第一时间提供'+json.data.bookInfo.bookName+'最新章节，'+json.data.bookInfo.bookName+'全文阅读请上辣鸡小说';
@@ -491,7 +491,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
         },
         // 发布间贴
         submitForm(index){
-            FetchAddPrattle({
+            service.FetchAddPrattle({
               pid:this.chapterInfo.chapterData[index].id,
               commentContext:this.FormReply.content,
               bookId:this.chapterInfo.bookId,
@@ -509,7 +509,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
         },
         // 点赞
         addThumbs(index){
-          FetchHandleUserInfo(this.chapterComment.list[index].id,'pal').then(json=>{
+          service.FetchHandleUserInfo(this.chapterComment.list[index].id,'pal').then(json=>{
             if(json.returnCode===ERR_OK){
               if(!this.chapterComment.list[index].isthumbs){
                 this.$message({message:"点赞成功",duration:1500});
@@ -574,7 +574,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             query: { redirect: this.$route.path } });
             return false
           }
-          FetchAddBookShelf(
+          service.FetchAddBookShelf(
             this.bookInfo.bookId,
             this.$store.state.userInfo.pseudonym,
             this.bookInfo.bookName
@@ -614,7 +614,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
             });
           }
           if(key){
-              FetchAutoSubscribe(this.chapterInfo.bookId,state!==undefined?'update':'search',state?1:0).then(json=>{
+              service.FetchAutoSubscribe(this.chapterInfo.bookId,state!==undefined?'update':'search',state?1:0).then(json=>{
                   state!==undefined?this.$nextTick(()=>{loading.close()}):false;
                   if(json.returnCode===ERR_OK){
                     if(state!==undefined){
@@ -632,7 +632,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
         },
         getPaComment(index,page){
           this.isFocus = false;
-          FetchGetPrattle(this.chapterInfo.chapterData[index].id,page).then(json=>{
+          service.FetchGetPrattle(this.chapterInfo.chapterData[index].id,page).then(json=>{
             if(json.returnCode===ERR_OK){
               this.chapterComment = json.data
             }
@@ -641,7 +641,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
         // 添加阅读记录
         addReadRecord(){
           if(this.$store.state.userInfo.userId){
-            FetchAddRecords({
+            service.FetchAddRecords({
               userName:this.$store.state.userInfo.pseudonym,
               bookId:this.chapterInfo.bookId,
               bookName:this.chapterInfo.bookTitle,
@@ -655,7 +655,7 @@ import { FetchUserGift,FetchReadChapter,FetchAutoSubscribe,FetchAddBookShelf,Fet
           if(this.buyForm.autoState){
             this.getAutoState(true)
           }
-          FetchSubscribeChapter({
+          service.FetchSubscribeChapter({
             userName:this.$store.state.userInfo.pseudonym,
             bookName:this.chapterInfo.bookTitle,
             bookId:this.chapterInfo.bookId,

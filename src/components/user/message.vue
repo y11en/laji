@@ -100,7 +100,7 @@
 
 <script type="text/ecmascript-6">
   import Comment from '../comment/zxy-comment.vue'
-  import { FetchGetUserData,aycn } from '../../api'
+  import * as service from '../../api/service'
   import { mapState } from 'vuex'
     export default{
       components:{
@@ -141,7 +141,7 @@
         },
 //        获取评论信息列表
         getUserComment(page){
-            FetchGetUserData(page,'com',this.$cookie("user_id")).then(json=>{
+            service.FetchGetUserData(page,'com',this.$cookie("user_id")).then(json=>{
               if(json.returnCode===200){
                 this.userCommentList = json.data;
                 this.$store.dispatch("FETCH_USER_MESSAGE");
@@ -151,7 +151,7 @@
         },
 //        获取私信列表
         getLetterList(page){
-            FetchGetUserData(page,'letter').then(json=>{
+            service.FetchGetUserData(page,'letter').then(json=>{
               if(json.returnCode===200){
                 this.letterList = json.data;
                 this.$store.dispatch("FETCH_USER_MESSAGE");
@@ -191,7 +191,7 @@
 
 //        通知列表
         getNoticeList(page){
-            FetchGetUserData(page,'notice').then(json=>{
+            service.FetchGetUserData(page,'notice').then(json=>{
               if(json.returnCode===200){
                 this.noticeList = json.data
               }
@@ -207,7 +207,7 @@
             if(this.$trim(this.privateForm.messageContent).length<1){this.privateForm.messageContent = ''}
             if (valid) {
               this.privateForm.userName = this.$store.state.userInfo.pseudonym;
-              aycn('/person-sendmessage',this.privateForm).then(json=>{
+                this.$store.dispatch('FetchSendmessage', this.privateForm).then(json=>{
                 if(json.returnCode===200){
                   this.$message("发送成功！");
                   this.dialogFormVisible = false
@@ -222,12 +222,8 @@
 //        删除私信
         deleteLetter(index){
             let value = this.letterList.list[index];
-            aycn('/person-updatemessage',{
-              userid:value.userId,
-              senduserid:value.userId,
-              messageid:value.id,
-              messageType:2
-            }).then(json=>{
+            this.$store.dispatch('FetchUpdatemessage', { userid:value.userId, senduserid:value.userId, messageid:value.id, messageType:2 }).then(json=>{
+                console.log(json)
               if(json.returnCode===200){
                 this.$message("删除成功");
                 this.getLetterList(this.letterList.pageNum)

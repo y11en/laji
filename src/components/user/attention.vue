@@ -49,7 +49,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetUserData } from '../../api'
+  import * as service from '../../api/service'
     export default{
         data(){
           return {
@@ -61,7 +61,7 @@
           this.getAttentionList(page)
         },
         getAttentionList(page){
-          FetchGetUserData(page,'follow').then(json=>{
+          service.FetchGetUserData(page,'follow').then(json=>{
             if (json.returnCode === 200) {
               json.data.list.map((item) => {
                 item.isfollow = true

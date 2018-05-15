@@ -76,7 +76,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetUserData,FetchHandleUserInfo } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data(){
         return{
@@ -88,7 +88,7 @@
       },
       methods:{
         getUserInfo(){
-            FetchGetUserData('su',this.$route.params.rid).then(json=>{
+            service.FetchGetUserData('su',this.$route.params.rid).then(json=>{
               if(json.returnCode===200){
                 this.baseInfo = json.data;
                 this.getChatList();
@@ -96,7 +96,7 @@
             })
         },
         getChatList(){
-            FetchGetUserData(this.$route.params.page,'chat',this.$route.params.rid).then(res=>{
+            service.FetchGetUserData(this.$route.params.page,'chat',this.$route.params.rid).then(res=>{
               if(res.returnCode===200){
                 this.chatList = res.data
               }
@@ -105,7 +105,7 @@
         send(){
           let txt = this.$trim(this.sendMsg);
           if(txt.length>0 && txt.length<=100){
-             FetchHandleUserInfo({
+             service.FetchHandleUserInfo({
                messageContent:this.sendMsg,
                userName:this.$store.state.userInfo.pseudonym,
                sendUserId:this.baseInfo.userId,

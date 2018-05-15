@@ -10,7 +10,7 @@
 
 <script type="text/ecmascript-6">
   import 'quill/dist/quill.snow.css'
-  import { aycn,FetchWebNotice } from '../../api'
+  import * as service from '../../api/service'
   export default{
       data(){
         return{
@@ -19,16 +19,11 @@
       },
       methods:{
         getNewsContent(){
-          FetchWebNotice(this.$route.params.id).then(json=>{
+          service.FetchWebNotice(this.$route.params.id).then(json=>{
             if(json.returnCode===200){
               this.newsContent = json.data
             }
           })
-//          aycn("/sysgetNoticeById",{
-//            noticeid:this.$route.params.id
-//          },'get').then(json=>{
-//
-//          })
         }
       },
       mounted(){

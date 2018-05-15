@@ -61,7 +61,7 @@
 
 <script type="text/ecmascript-6">
  import draggable from 'vuedraggable'
- import { FetchNetTime,FetchAuthorChapterList,FetchAuthorHandleBook } from '../../api'
+ import * as service from '../../api/service'
  import { mapGetters } from 'vuex'
   export default {
     components:{
@@ -77,7 +77,7 @@
     },
     methods:{
       getChapterList(){
-          FetchNetTime().then(time=>{
+          service.FetchNetTime().then(time=>{
               if(time.returnCode===200){
                   this.curTime = time.data.beijing;
                   clearInterval(this.autoTime);
@@ -87,7 +87,6 @@
               }
           });
           this.$store.dispatch('FETCH_AUTHOR_CHAPTER_LIST',this.$route.params.bid);
-//          FetchAuthorChapterList(this.$route.params.bid)/
       },
       dragMove(evt){
         let val = evt.draggedContext;
@@ -111,7 +110,7 @@
         let old = this.cloneList[evt.oldIndex];
         let New = this.cloneList[evt.newIndex];
         this.$myLoad('正在调整中...');
-        FetchAuthorHandleBook({
+        service.FetchAuthorHandleBook({
           startNum:old.chapterOrder,
           endNum:New.chapterOrder,
           bookid:old.bookId,

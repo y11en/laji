@@ -46,9 +46,9 @@
                   <p class="detail" style="width: 132px">
                     <span class="tit">字数：</span><span class="txt txt-overflow vab">{{item.bookWorldCount}}</span>
                   </p>
-                  <p class="detail" style="width: 250px">
+                  <!-- <p class="detail" style="width: 250px">
                     <span class="tit">更新时间：</span><span class="txt txt-overflow vab">{{item.lastUpdateTime|time('long')}}</span>
-                  </p>
+                  </p> -->
                 </div>
               </div>
               <div class="book-intro overLine2">
@@ -77,7 +77,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchAddBookShelf,FetchSearchHotWords,FetchGetBookInfo } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data(){
           return {
@@ -108,7 +108,7 @@
           };
         },
         getData(){
-          FetchGetBookInfo({
+          service.FetchGetBookInfo({
             keyWord:this.$route.params.keywords,
             startupPage:this.$route.params.page,
             isHotWorld:1
@@ -126,7 +126,7 @@
           });
         },
         loadAll(){
-          FetchSearchHotWords().then(json=>{
+          service.FetchSearchHotWords().then(json=>{
             if(json.returnCode===200){
               this.hotList = json.data
             }
@@ -136,7 +136,7 @@
         addBookshelf(index){
           if(this.$store.state.userInfo.userId){
             let val = this.searchList.list[index];
-            FetchAddBookShelf(val.bookId,this.$store.state.userInfo.pseudonym,val.bookName).then(json=>{
+            service.FetchAddBookShelf(val.bookId,this.$store.state.userInfo.pseudonym,val.bookName).then(json=>{
               if(json.returnCode===200){
                 this.searchList.list[index].collectionStatus = (this.searchList.list[index].collectionStatus?0:1);
                 this.$message(json.msg)

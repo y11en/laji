@@ -80,7 +80,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchAddBookShelf,FetchGetBookInfo } from '../../api'
+  import * as service from '../../api/service'
     export default{
       props:{
         userInfo:Object
@@ -99,7 +99,6 @@
         },
         getRank(){
             let self = this,type;
-            console.log(self)
             switch (this.$route.params.type){
                 case "golden":
                     type = 1;
@@ -126,7 +125,7 @@
                     type = 8;
                 break;
             }
-            FetchGetBookInfo({ type: type, page: this.$route.params.page }, 'rank').then(json=>{
+            service.FetchGetBookInfo({ type: type, page: this.$route.params.page }, 'rank').then(json=>{
                 if(json.returnCode===200){
                     if(self.$route.params.type==='latest'){
                         self.dataList = json.data.newBookRankingList

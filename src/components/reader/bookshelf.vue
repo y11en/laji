@@ -48,7 +48,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetUserData,FetchAuthorBookList } from '../../api'
+  import * as service from '../../api/service'
   export default{
     props:['identity'],
     data(){
@@ -68,7 +68,7 @@
         if(this.identity!==undefined){
           if(this.identity && this.activeTab==='bookshelf'){
 //          作者书籍
-            FetchAuthorBookList(id).then(json=>{
+            service.FetchAuthorBookList(id).then(json=>{
               this.ready = true;
               if(json.returnCode===200){
                 this.shelfList = json.data
@@ -77,7 +77,7 @@
               }
             });
           }else {
-              FetchGetUserData(page,type,id).then(json=>{
+              service.FetchGetUserData(page,type,id).then(json=>{
                 this.ready = true;
                 if(json.returnCode===200){
                   this.ready = true;

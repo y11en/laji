@@ -42,7 +42,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { aycn } from '../../api'
     export default{
       data(){
           var validateEmail = (rule, value, callback) => {
@@ -107,7 +106,7 @@
         editUserInfo(){
           this.$refs['editForm'].validate((valid) => {
             if (valid) {
-              aycn('/person-updateInfo',this.userInfo).then(json=>{
+                this.$store.dispatch('FetchPersonUpdateInfo', this.userInfo).then(json=>{
                 if(json.returnCode===200){
                   this.$message("更新成功！");
                   this.$store.dispatch("FETCH_FRESHEN_INFO");

@@ -165,7 +165,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchMineWallet } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data() {
         return {
@@ -179,7 +179,7 @@
         },
         getRecordList(){
             let type = this.$route.name.replace('wallet','');
-            FetchMineWallet(type,this.page,this.$cookie('user_id')).then(json=>{
+            service.FetchMineWallet(type,this.page,this.$cookie('user_id')).then(json=>{
               if(json.returnCode===200 || !json.data){
                 this.recordList = json.data;
               }

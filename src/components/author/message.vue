@@ -52,7 +52,7 @@
   let ERR_OK = 200;
   let ERR_NO = 400;
   import Comment from '../comment/zxy-comment.vue'
- import { aycn,FetchHandleUserInfo,FetchAuthorChapterList,FetchAuthorBookList,FetchBookCommentList,FetchBookCommentReply,FetchGetPrattle,FetchAuthorGainLog } from '../../api'
+  import * as service from '../../api/service'
     export default{
       data(){
           return {
@@ -77,7 +77,7 @@
       },
       methods:{
         getBookList(){
-            FetchAuthorBookList(this.$cookie("user_id")).then(json=>{
+            service.FetchAuthorBookList(this.$cookie("user_id")).then(json=>{
               if(json.returnCode===ERR_OK){
                 this.bookList = json.data.reverse();
                 if(this.bookList.length){
@@ -107,7 +107,7 @@
                  cancelButtonText:'否',
                  callback: action => {
                    if(action==='confirm'){
-                     FetchHandleUserInfo(index,'dc').then(json=>{
+                     service.FetchHandleUserInfo(index,'dc').then(json=>{
                        if(json.returnCode===ERR_OK){
                          this.$message('删除成功');
                          this.getBookComment(this.page)
@@ -118,7 +118,7 @@
                });
 
              }else if(type==='delete2'){
-                 FetchHandleUserInfo(index,'dcr').then(json=>{
+                 service.FetchHandleUserInfo(index,'dcr').then(json=>{
                    if(json.returnCode===ERR_OK){
                      this.$message('删除成功');
                      this.getBookComment(this.page)
@@ -127,7 +127,7 @@
              }
              else if(type==='upTop'){
                index.state = !index.state?1:0;
-               aycn("/comm-isTop/"+index.id+"/"+index.bid+"/"+index.state,'get').then(json=>{
+               this.$store.dispatch('FetchIsTop', index).then(json=>{
                  if(json.returnCode===ERR_OK){
                    if(index.state){
                      this.$message("置顶成功")
@@ -139,7 +139,7 @@
                })
              }else if(type==='zan'){
                //        评论点赞
-               FetchHandleUserInfo(this.commentList.list[index].id,'bal').then(json=>{
+               service.FetchHandleUserInfo(this.commentList.list[index].id,'bal').then(json=>{
                  if(json.returnCode===ERR_OK){
                    if(!this.commentList.list[index].isthumbs){
                      this.$message({message:"点赞成功",duration:1500});
@@ -171,7 +171,7 @@
           page = page | 1;
           this.page = page;
           if(this.currentBid){
-            FetchBookCommentList(this.currentBid,page).then(json=>{
+            service.FetchBookCommentList(this.currentBid,page).then(json=>{
               if(json.returnCode===ERR_OK){
                 this.commentList = json.data;
                 this.commentList.list.map((item, index) => {
@@ -184,7 +184,7 @@
           }
         },
         getReply(cmid,page,index){
-          FetchBookCommentReply(cmid,page).then(json=>{
+          service.FetchBookCommentReply(cmid,page).then(json=>{
             if(json.returnCode===ERR_OK){
               this.$set(this.commentList.list[index],"dataList",json.data)
             }
@@ -203,7 +203,7 @@
               }
             }
             if(id){
-              FetchGetPrattle(id,page,type).then(json=>{
+              service.FetchGetPrattle(id,page,type).then(json=>{
                 this.chapterCommentList ={};
                 if(json.returnCode===200){
                   this.chapterCommentList = json.data
@@ -225,7 +225,7 @@
               cancelButtonText:'否',
               callback: action => {
                 if(action==='confirm'){
-                    FetchHandleUserInfo(index,'dg').then(json=>{
+                    service.FetchHandleUserInfo(index,'dg').then(json=>{
                       if(json.returnCode===200){
                         this.$message("删除成功！");
                         this.getChapterComment(this.chapterCommentList.pageNum,'cid')
@@ -236,7 +236,7 @@
             });
 
           }else if(type==='zan'){
-              FetchHandleUserInfo(this.chapterCommentList.list[index].id,'pal').then(json=>{
+              service.FetchHandleUserInfo(this.chapterCommentList.list[index].id,'pal').then(json=>{
                 if(json.returnCode===200){
                   this.$message(this.chapterCommentList.list[index].isthumbs?'取消成功':'点赞成功');
                   this.getChapterComment(this.chapterCommentList.pageNum)
@@ -246,7 +246,7 @@
           }
         },
         getChapterList(){
-          FetchAuthorChapterList(this.currentBid).then(json=>{
+          service.FetchAuthorChapterList(this.currentBid).then(json=>{
             let newArr = [];
             if(json.returnCode===200){
               let data = json.data;
@@ -260,7 +260,7 @@
           });
         },
         harvest(page){
-            FetchAuthorGainLog(page).then(json=>{
+            service.FetchAuthorGainLog(page).then(json=>{
               if(json.returnCode===200){
                 this.harvestList = json.data
               }

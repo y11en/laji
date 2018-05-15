@@ -108,7 +108,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-import { FetchCheckName,FetchGetBookInfo,FetchAuthorHandleBook,FetchNetTime } from '../../api'
+import * as service from '../../api/service'
     // 距离算法实现文本相似度比较
 var LevenshteinDistance = {
     _str1:null,
@@ -207,7 +207,7 @@ export default {
                 this.volumeForm.volumeName = ''
                 callback(new Error("卷名不能为空"))
             }else {
-                FetchCheckName({ volumeName:value, bookid:this.ruleForm.bookId },'volume').then(json=>{
+                service.FetchCheckName({ volumeName:value, bookid:this.ruleForm.bookId },'volume').then(json=>{
                     if (json.returnCode===200) {
                         callback()
                     } else {
@@ -230,7 +230,7 @@ export default {
                         callback(new Error('章节名长度不可超过20字符'))
                         return false
                     }
-                    FetchCheckName({ chapterName:value, bookId:this.ruleForm.bookId },'chapter').then(json=>{
+                    service.FetchCheckName({ chapterName:value, bookId:this.ruleForm.bookId },'chapter').then(json=>{
                         if(json.returnCode===200){
                             callback()
                         }else{
@@ -342,7 +342,7 @@ export default {
             }
             let cloneData = JSON.parse(JSON.stringify(this.ruleForm))
             let release = () =>{
-                FetchAuthorHandleBook(cloneData,'ec').then(json=>{
+                service.FetchAuthorHandleBook(cloneData,'ec').then(json=>{
                     this.$nextTick(()=>{
                         this.$loading().close()
                     })
@@ -385,7 +385,7 @@ export default {
         addNewVolume(formName) {
             this.$refs[formName].validate((valid) => {
             if(valid){
-                FetchAuthorHandleBook({
+                service.FetchAuthorHandleBook({
                     volumeName:this.volumeForm.volumeName,
                     bookName:this.ruleForm.bookTitle,
                     bookid:this.$route.params.bid
@@ -406,14 +406,14 @@ export default {
         getChapterInfo() {
             let reg1 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/
             let reg2 = /<LG>[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}<\/?LG ?\/?>/g
-            FetchNetTime().then(time=>{
+            service.FetchNetTime().then(time=>{
                 if(time.returnCode===200){
                     let count = 0
                     setInterval(()=>{
                         count++
                         this.$set(this.original,'nowTime',time.data.beijing+count*1000)
                     },1000)
-                    FetchGetBookInfo(this.$route.params.cid,'chapter').then(json=>{
+                    service.FetchGetBookInfo(this.$route.params.cid,'chapter').then(json=>{
                         this.update = false
                         if(json.returnCode===200){
                             this.bookId = json.data.bookId
@@ -448,10 +448,10 @@ export default {
 
         // 获取分卷列表
         getVolume() {
-            FetchGetBookInfo(this.ruleForm.bookId,'volume').then(json=>{
+            service.FetchGetBookInfo(this.ruleForm.bookId,'volume').then(json=>{
                 if(json.returnCode===200){
                     if(json.data < 1){
-                        FetchGetBookInfo(this.$route.params.bid,'book').then(json2=>{
+                        service.FetchGetBookInfo(this.$route.params.bid,'book').then(json2=>{
                             if(json2.returnCode===200){
                                 this.ruleForm.bookTitle = json2.data.bookName
                                 this.ruleForm.bookId = json2.data.bookId
@@ -508,7 +508,7 @@ export default {
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    FetchAuthorHandleBook({
+                    service.FetchAuthorHandleBook({
                         chapterid:this.ruleForm.id,
                         volumeid:val,
                         bookid:this.ruleForm.bookId,
@@ -536,7 +536,6 @@ export default {
             // old、fersh 均为数组 原数组包含uuid
             fresh = this.ruleForm.chapterContent.replace(/\s*$/,'').split(/\n+\s*/)
             let contentStr = ''
-            console.log(old)
             for(let k=0,len=old.length;k<len;k++){
                 if(old[k].content){
                     let perList = []

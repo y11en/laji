@@ -1,7 +1,7 @@
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-const LRU = require('lru-cache');
+// const LRU = require('lru-cache');
 const express = require('express');
 const favicon = require('serve-favicon');
 const compression = require('compression');
@@ -13,15 +13,15 @@ const http = require('http');
 const isProd = process.env.NODE_ENV === 'production';
 const useMicroCache = process.env.MICRO_CACHE !== 'false';
 const serverInfo =
-  `express/${require('express/package.json').version} ` +
-  `vue-server-renderer/${require('vue-server-renderer/package.json').version}`;
+    `express/${require('express/package.json').version} ` +
+    `vue-server-renderer/${require('vue-server-renderer/package.json').version}`;
 
 const key  = fs.readFileSync('./certificate/ca.key', 'utf8');
 const cert = fs.readFileSync('./certificate/private.pem', 'utf8');
 const credentials = {
-  key: key,
-  cert: cert
-};
+    key: key,
+    cert: cert
+}
 // process.env.NODE_ENV = 'production';
 const app = express();
 // app.set('env','production');
@@ -29,10 +29,10 @@ function createRenderer (bundle, options) {
   // https://github.com/vuejs/vue/blob/dev/packages/vue-server-renderer/README.md#why-use-bundlerenderer
   return createBundleRenderer(bundle, Object.assign(options, {
     // for component caching
-    cache: LRU({
-      max: 1000,
-      maxAge: 1000 * 60 * 15
-    }),
+    // cache: LRU({
+    //   max: 1000,
+    //   maxAge: 1000 * 60 * 15
+    // }),
     // this is only needed when vue-server-renderer is npm-linked
     basedir: resolve('./dist'),
     // recommended for performance
@@ -134,19 +134,6 @@ function render (req, res) {
     }catch (error){console.log(error)}
   })
 }
-
-// app.use(
-//   '/api',
-//   proxy({
-//     target: "http://www.lajixs.com",
-//     changeOrigin: true,
-//     secure:true,
-//     pathRewrite:{
-//       "^/api":""
-//     }
-//   })
-// );
-
 
 const SSLPORT = 80;
 

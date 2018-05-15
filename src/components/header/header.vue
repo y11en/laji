@@ -1,13 +1,8 @@
 <template>
   <div class="web-header-wrap" >
-  <vue-headerBar
-    v-if="isShow"
-  ></vue-headerBar>
+  <vue-headerBar v-if="isShow"></vue-headerBar>
   <div class="loginRegister-top"
-       v-else-if="$route.name==='Login'
-       || $route.name==='Register'
-       || $route.name==='modifyPage'
-       || $route.name==='findPage'">
+       v-else-if="$route.name==='Login' || $route.name==='Register' || $route.name==='modifyPage' || $route.name==='findPage'">
     <div class="lr-nav">
       <div class="lr-nav-inner clear">
         <ul class="subNav">
@@ -118,7 +113,6 @@
 import Vue from 'vue'
 import Nav from '../nav/nav.vue'
 import Dheader from './detailHeader.vue'
-import { FetchSearchHotWords,aycn } from '../../api'
 import { mapState } from 'vuex'
 export default({
   data(){
@@ -186,7 +180,7 @@ export default({
       }else if(commend==='user'){
         this.$router.push("/user/index")
       }else if(commend==='exit'){
-          aycn('/person-ClearUserInfo').then(json=>{
+          this.$store.dispatch('FetchClearUserInfo').then(json=>{
             if(json.returnCode===200){
               this.$message("退出成功！");
               this.$cookie('user_id','',-1);

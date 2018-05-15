@@ -124,7 +124,7 @@
 
 <script type="text/ecmascript-6">
   import { mapGetters,mapActions,mapMutations,mapState } from 'vuex'
-  import { FetchAddBookComment,FetchUserGift,FetchHandleUserInfo } from '../../../api'
+  import * as service from '../../../api/service'
     export default{
       name:'my-consume',
       props:{
@@ -162,7 +162,7 @@
                 userName:this.userInfo.pseudonym,
                 commentContext:this.Consume.messageContent
               };
-              FetchAddBookComment(data).then(json=>{
+              service.FetchAddBookComment(data).then(json=>{
                 if(json.returnCode===200){
                   this.Consume.messageContent = '';
                   this.$message("发送成功！");
@@ -180,7 +180,7 @@
                   data.areaid = this.Consume.aid;
                   data.type = 1
               }
-              FetchHandleUserInfo(data,'sl').then(json=>{
+              service.FetchHandleUserInfo(data,'sl').then(json=>{
                   if(json.returnCode===200){
                     this.Consume.messageContent = '';
                     this.close();
@@ -196,7 +196,7 @@
                 authorId:info.bookWriterId
               };
               if(this.Consume.type==='reward'){data.message = this.Consume.formData.content}
-                FetchUserGift(this.Consume.type,this.Consume.formData.count,data).then(json=>{
+                service.FetchUserGift(this.Consume.type,this.Consume.formData.count,data).then(json=>{
                   if(json.returnCode===200){
                     this.close();
                     this.Consume.formData.content = '';

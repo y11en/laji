@@ -134,7 +134,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchGetUserData,FetchGetPrattle,FetchAuthorBookList } from '../../api'
+  import * as service from '../../api/service'
   export default{
     props:['identity'],
     data() {
@@ -151,14 +151,14 @@
       getDataList(){
 //      书评
         let id = this.$route.params.uid;
-        FetchGetUserData(1,'bcom',id).then(json=>{
+        service.FetchGetUserData(1,'bcom',id).then(json=>{
           if(json.returnCode===200){
             this.commentList = json.data
           }
         });
 
 //        吐槽
-        FetchGetPrattle(id,1,'user').then(json=>{
+        service.FetchGetPrattle(id,1,'user').then(json=>{
           if(json.returnCode===200){
             this.spitList = json.data
           }
@@ -166,7 +166,7 @@
 
 
 //        用户粉丝列表
-        FetchGetUserData(1,'reFan',id).then(json=>{
+        service.FetchGetUserData(1,'reFan',id).then(json=>{
           if(json.returnCode===200){
             this.fansList = json.data
           }
@@ -174,7 +174,7 @@
         
 
 //        用户关注列表
-        FetchGetUserData(1,'reAtt',id).then(json=>{
+        service.FetchGetUserData(1,'reAtt',id).then(json=>{
           if(json.returnCode===200){
             this.attentionList = json.data
           }
@@ -185,7 +185,7 @@
          let id = this.$route.params.uid;
         if(this.identity===1){
 //            作者书籍
-          FetchAuthorBookList(id).then(json=>{
+          service.FetchAuthorBookList(id).then(json=>{
             if(json.returnCode===200){
               this.recordList = json.data
             }else if(json.returnCode===500){
@@ -194,7 +194,7 @@
           })
         }else if(this.identity===0) {
           //        阅读记录
-          FetchGetUserData(1,'reLog',id).then(json=>{
+          service.FetchGetUserData(1,'reLog',id).then(json=>{
             if(json.returnCode===200){
               this.recordList = json.data.list
             }

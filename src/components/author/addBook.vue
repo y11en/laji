@@ -123,7 +123,7 @@
 
 <script type="text/ecmascript-6">
 import Vue from 'vue'
-import { FetchGetBookInfo,FetchAuthorHandleBook,FetchCheckName } from '../../api'
+import * as service from '../../api/service'
 export default{
 
     components:{
@@ -144,7 +144,7 @@ export default{
                         callback(new Error("书籍名称只能包含中文、数字、字母和冒号"))
                         return false
                     }
-                    FetchCheckName({ bookName:this.bookInfo.bookName },'book').then(json=>{
+                    service.FetchCheckName({ bookName:this.bookInfo.bookName },'book').then(json=>{
                         if(json.returnCode!==200){
                             callback(new Error('作品名称已存在，请重新填写'))
                         }else{
@@ -243,7 +243,7 @@ export default{
                     formData.bookName = this.$trim(formData.bookName)
                     formData.writerName = this.$store.state.userInfo.pseudonym
                     // 添加/修改书籍
-                    FetchAuthorHandleBook(formData, type).then(json=>{
+                    service.FetchAuthorHandleBook(formData, type).then(json=>{
                         if(json.returnCode===200){
                             if(type==='ab'){
                                 this.bookId = json.data
@@ -297,12 +297,13 @@ export default{
 
         getLabel() {
             // 请求作品标签、作品分类
-            FetchGetBookInfo('', 'label').then( json => {
+            service.FetchGetBookInfo('', 'label').then( json => {
                 this.bookLabelList = json.data.booklablesList
                 this.classList = json.data.classificationList
                 // 如果是修改信息，请求书籍信息
                 if(this.$route.name==='EditBook'){
-                    FetchGetBookInfo(this.$route.params.bid, 'book').then(json2=>{
+                    service.FetchGetBookInfo(this.$route.params.bid, 'book').then(json2=>{
+                        console.log(json2)
                         if(json2.returnCode===200){
                             let arr = []
                             json2.data.bookLabId.split(",").map((item) => {

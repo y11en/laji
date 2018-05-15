@@ -57,9 +57,9 @@ import { mapState } from 'vuex'
           return store.dispatch("FETCH_AUTHOR_WELFARE")
       },
       mounted(){
-        if(!this.once){
+        // if(!this.once){
           this.$store.dispatch("FETCH_AUTHOR_WELFARE");
-        }
+        // }
         this.$nextTick(()=>{
           this.bgHeight = this.$refs.welfare.clientHeight-900;
           this.height = this.$refs.welfare.clientHeight;
@@ -87,7 +87,7 @@ import { mapState } from 'vuex'
       computed:{
           ...mapState([
               'authorWelfare',
-              'once'
+            //   'once'
           ]),
       },
       watch:{

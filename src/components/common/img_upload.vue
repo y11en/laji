@@ -190,7 +190,6 @@ export default{
                 if(!this.sync){
                     this.$myLoad('正在上传中...')
                 }
-                console.log(formData)
                 //ajax 提交form
                 $.ajax({
                     url : this.action,

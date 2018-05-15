@@ -1,588 +1,549 @@
 <template>
-  <div id="home" class="content">
+<div id="home" class="content">
     <div class="content-inner">
-      <!--首页顶部轮播图-->
-      <div class="banner-wrap">
-        <div class="banner pr20">
-          <template>
-            <el-carousel :interval="5000" arrow="hover" class="zdy-cover">
-              <template v-if="allData && allData.maxBrandPicList">
-                <el-carousel-item v-for="(item,index) in allData.maxBrandPicList" :key="index" >
-                  <router-link :to="'/book/'+item.bookId">
-                    <img style="height:auto;width:100%" class="br5" :src="item.bookImage" alt="banner推荐位">
-                    <div class="zdy-mask">
-                      <p class="tl h34">{{item.bookName}}</p>
-                    </div>
-                  </router-link>
-                </el-carousel-item>
-              </template>
-            </el-carousel>
-          </template>
-        </div>
-        <div class="bw-right">
-          <template v-if="allData && allData.minBrandPicList">
-            <router-link class="zdy-cover" v-for="item in allData.minBrandPicList" :key="item.bookId" :title="item.bookName" :to="'/book/'+item.bookId">
-              <img :src="item.bookImage" :alt="item.bookName">
-              <div class="zdy-mask">
-                <p>{{item.bookName}}</p>
-              </div>
-            </router-link>
-          </template>
-        </div>
-      </div>
-
-      <!--网站动态 start-->
-      <!--网站公告 start-->
-      <div class="tr-title">
-        <img src="/static/img/icon/web_trends.png" class="fl" alt="">
-        <div class="tr-txt circular-wrap" @mouseleave="go" @mouseenter="stop">
-          <transition-group name="circular">
-            <div class="circular-item" v-if="allData && allData.gunDongDeng" v-for="(item,$index) in allData.gunDongDeng" :key="$index" v-show="current===$index">
-              <div class="item-left">
-                <router-link :to="'/reader/'+item.userId">{{item.userName}} </router-link>评论了
-                <router-link :to="'/book/'+item.bookId">《{{item.bookName}}》</router-link>
-              </div>
-              <div class="item-right">
-                <span class="grey txt-overflow">{{item.commentContext}}</span>
-              </div>
+        <!--首页顶部轮播图-->
+        <div class="banner-wrap">
+            <div class="banner pr20">
+                <el-carousel :interval="5000" arrow="hover" class="zdy-cover">
+                    <el-carousel-item v-for="(item,index) in allData.maxBrandPicList" :key="index">
+                        <router-link :to="'/book/'+item.bookId">
+                            <img style="height:auto;width:100%" class="br5" :src="item.bookImage" alt="banner推荐位">
+                            <div class="zdy-mask">
+                                <p class="tl h34">{{item.bookName}}</p>
+                            </div>
+                        </router-link>
+                    </el-carousel-item>
+                </el-carousel>
             </div>
-          </transition-group>
 
-        </div>
-      </div>
-      <!--网站公告 end -->
-      <div class="trends" v-if="allData && allData.activityRecommendedPositionList && allData.activityRecommendedPositionList[0] ">
-        <div class="trends-content br5">
-          <a  target="_blank" :href="activeHref(0)">
-            <img  :src="allData.activityRecommendedPositionList[0].activityImgURL" alt="网站动态公告">
-          </a>
-        </div>
-      </div>
-      <!--网站动态 end -->
-
-      <!--热门推荐  start-->
-      <div class="hot-book">
-        <div class="main-left">
-          <div class="heading hotIcon-bg">
-            <img src="/static/img/icon/hot_book.png" alt="">
-            <div class="fl f-title ml10">
-              热门推荐
-            </div>
-          </div>
-          <div class="hb-left clear">
-            <ul class="book-list clear">
-              <template v-if="allData && allData.hotRecommendedList">
-                <li v-for="item in allData.hotRecommendedList">
-                  <router-link class="cover" :to="'/book/'+item.bookId">
+            <div class="bw-right">
+                <router-link class="zdy-cover" v-for="item in allData.minBrandPicList" :key="item.bookId" :title="item.bookName" :to="'/book/'+item.bookId">
                     <img :src="item.bookImage" :alt="item.bookName">
-                  </router-link>
-                  <div class="b-Title">
-                    <router-link :to="'/book/'+item.bookId" :title="item.bookName" class="txt-overflow">{{item.bookName}}</router-link>
-                  </div>
-                </li>
-              </template>
-            </ul>
-          </div>
-        </div>
-        <div class="main-right">
-          <!--网站通告  start-->
-          <div class="web-event">
-            <el-tabs type="card" active-name="first_three" class="home-tabs system">
-              <!--<el-tab-pane label="系统" disabled></el-tab-pane>-->
-              <el-tab-pane label="公告" name="first_three">
-                <div class="event-view">
-                  <div v-for="(item ,index) in allData.webannouncementList" class="event-item">
-                    <router-link target="_blank" :to="'/news/'+item.id">
-                      <span class="item-index fl">{{index+1}}</span>
-                      <span class="item-date fr">{{ item.releaseDate |time('special','/')}}</span>
-                      <!--顺序不可变  否则影响页面布局-->
-                      <span class="item-txt txt-overflow">
-                        {{item.title}}
-                      </span>
-                    </router-link>
-                  </div>
-                </div>
-              </el-tab-pane>
-              <el-tab-pane label="动态" name="second_three">
-                <div class="event-view">
-                  <template v-for="(item,index) in allData.dynamicList">
-                    <div class="event-item">
-                      <p v-if="index<6">
-                        <span class="item-index fl">{{index+1}}</span>
-                        <!--顺序不可变  否则影响页面布局-->
-                        <span class="item-txt txt-overflow mr0">
-                          <router-link target="_blank" :to="'/reader/'+item.userId">{{item.pseudonym}} </router-link>打赏了
-                          <router-link target="_blank" :to="'/book/'+item.bookid">
-                            {{item.bookName}}
-                          </router-link>
-                        </span>
-                      </p>
+                    <div class="zdy-mask">
+                        <p>{{item.bookName}}</p>
                     </div>
-                  </template>
-                </div>
-              </el-tab-pane>
-            </el-tabs>
-
-          </div>
-          <!--网站通告 end-->
-        </div>
-      </div>
-      <!--热门推荐 end-->
-
-      <!--新书推荐  begin-->
-      <div class="new-book clear">
-        <div class="main-left clear">
-          <div class="home-left-header">
-            <span class="home-left-title home-new-title">新书推荐</span>
-            <a href="javascript:;" class="exchange" @click="exchange($event)">换一换</a>
-          </div>
-          <div class="nb-content clear">
-            <ul class="book-list2 clear">
-              <li v-for="item in allData.newBook">
-                <router-link class="cover" :to="'/book/'+item.bookId">
-                  <img :src="item.bookImage" :alt="item.bookName">
                 </router-link>
-                <div class="b-title">
-                  <router-link to="/book/1" class="txt-overflow">
-                    {{item.bookName}}
-                  </router-link>
+            </div>
+        </div>
+
+        <!-- 网站动态 -->
+        <div class="tr-title">
+            <img src="/static/img/icon/web_trends.png" class="fl" alt="">
+            <div class="tr-txt circular-wrap" @mouseleave="go" @mouseenter="stop">
+                <transition-group name="circular">
+                    <div class="circular-item" v-for="(item,$index) in allData.gunDongDeng" :key="$index" v-show="current===$index">
+                        <div class="item-left">
+                            <router-link :to="'/reader/'+item.userId">{{item.userName}} </router-link>评论了
+                            <router-link :to="'/book/'+item.bookId">《{{item.bookName}}》</router-link>
+                        </div>
+                        <div class="item-right">
+                            <span class="grey txt-overflow">{{item.commentContext}}</span>
+                        </div>
+                    </div>
+                </transition-group>
+            </div>
+        </div>
+
+        <!-- 广告位 -->
+        <div class="trends">
+            <div class="trends-content br5">
+                <router-link to="/solicit#fromapp" target="_blank">
+                    <img src="../../../static/img/solicit/Bitmap.png" alt="网站动态公告">
+                </router-link>
+            </div>
+        </div>
+
+        <!-- 热门推荐 -->
+        <div class="hot-book">
+            <div class="main-left">
+                <div class="heading hotIcon-bg">
+                    <img src="/static/img/icon/hot_book.png" alt="">
+                    <div class="fl f-title ml10">热门推荐</div>
                 </div>
-                <div class="b-info">
-                  <span>{{item.clickTotal | number}}</span>
-                  <span class="sep">|</span>
-                  <span>{{item.classificationName}}</span>
+                <div class="hb-left clear">
+                    <ul class="book-list clear">
+                            <li v-for="(item, index) in allData.hotRecommendedList" :key="index">
+                                <router-link class="cover" :to="'/book/'+item.bookId">
+                                    <img :src="item.bookImage" :alt="item.bookName">
+                                </router-link>
+                                <div class="b-Title">
+                                    <router-link :to="'/book/'+item.bookId" :title="item.bookName" class="txt-overflow">{{item.bookName}}</router-link>
+                                </div>
+                            </li>
+                    </ul>
                 </div>
-              </li>
+            </div>
+
+            <div class="main-right">
+                <!-- 网站通告 -->
+                <div class="web-event">
+                    <el-tabs type="card" active-name="first_three" class="home-tabs system">
+                        <el-tab-pane label="公告" name="first_three">
+                            <div class="event-view">
+                            <div v-for="(item, index) in allData.webannouncementList" class="event-item" :key="index">
+                                <router-link target="_blank" :to="'/news/'+item.id">
+                                    <span class="item-index fl">{{index+1}}</span>
+                                    <span class="item-date fr">{{ item.releaseDate |time('special','/')}}</span>
+                                    <!--顺序不可变  否则影响页面布局-->
+                                    <span class="item-txt txt-overflow">{{item.title}}</span>
+                                </router-link>
+                            </div>
+                            </div>
+                        </el-tab-pane>
+
+                        <el-tab-pane label="动态" name="second_three">
+                            <div class="event-view">
+                                <template v-for="(item, index) in allData.dynamicList">
+                                    <div class="event-item" :key="index">
+                                        <p v-if="index<6">
+                                            <span class="item-index fl">{{index+1}}</span>
+                                            <!--顺序不可变  否则影响页面布局-->
+                                            <span class="item-txt txt-overflow mr0">
+                                                <router-link target="_blank" :to="'/reader/'+item.userId">{{item.pseudonym}} </router-link>打赏了
+                                                <router-link target="_blank" :to="'/book/'+item.bookid">{{item.bookName}}</router-link>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </template>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新书推荐 -->
+        <div class="new-book clear">
+            <div class="main-left clear">
+                <div class="home-left-header">
+                    <span class="home-left-title home-new-title">新书推荐</span>
+                    <a href="javascript:;" class="exchange" @click="exchange($event)">换一换</a>
+                </div>
+                <div class="nb-content clear">
+                    <ul class="book-list2 clear">
+                        <li v-for="(item, index) in allData.newBook" :key="index">
+                            <router-link class="cover" :to="'/book/'+item.bookId">
+                                <img :src="item.bookImage" :alt="item.bookName">
+                            </router-link>
+                            <div class="b-title">
+                                <router-link to="/book/1" class="txt-overflow">{{item.bookName}}</router-link>
+                            </div>
+                            <div class="b-info">
+                                <span>{{item.clickTotal | number}}</span>
+                                <span class="sep">|</span>
+                                <span>{{item.classificationName}}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="main-right clear">
+                <el-tabs type="card" activeName="first_one" class="home-tabs golden">
+                    <el-tab-pane label="金椒榜" disabled></el-tab-pane>
+                    <el-tab-pane label="月" name="first_one">
+                        <ul class="rank-list">
+                            <template v-for="(item,index) in allData.jinJiaoTopMonthList">
+                                <li v-if="index===0" :key="index">
+                                    <router-link :to="'/book/'+item.bookId" class="cover">
+                                        <img :src="item.bookImage" :alt="item.bookName">
+                                    </router-link>
+                                    <div class="info">
+                                        <div class="b-title txt-overflow">
+                                            <router-link :to="'/book/'+item.bookId">{{item.bookName}}</router-link>
+                                        </div>
+                                        <div class="b-writer txt-overflow">{{item.writerName}}</div>
+                                        <div class="class-name">{{item.classificationName}}</div>
+                                    </div>
+                                </li>
+                                <li v-else-if="index>0&&index<10" :key="index">
+                                    <div class="order">{{index < 9 ? ('0' + (index+1)) : index+1}}</div>
+                                    <div class="txt-overflow">
+                                        <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
+                                            {{'【' + item.classificationName + '】'}} {{item.bookName}}
+                                        </router-link>
+                                    </div>
+                                </li>
+                            </template>
+                            <li class="more"><router-link to="/rank/golden">查看更多　　<i class="el-icon-arrow-right"></i></router-link></li>
+                        </ul>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="总" name="second_one">
+                        <ul class="rank-list">
+                            <template v-for="(item,index) in allData.jinJiaoToptotalList">
+                                <li v-if="index===0" :key="index">
+                                    <router-link :to="'/book/'+item.bookId" class="cover">
+                                        <img :src="item.bookImage" :alt="item.bookName">
+                                    </router-link>
+                                    <div class="info">
+                                        <div class="b-title txt-overflow">
+                                            <router-link :to="'/book/'+item.bookId">{{item.bookName}}</router-link>
+                                        </div>
+                                        <div class="b-writer txt-overflow">{{item.writerName}}</div>
+                                        <div class="class-name">
+                                            {{item.classificationName}}
+                                        </div>
+                                    </div>
+                                </li>
+                                <li v-else-if="index>0&&index<10" :key="index">
+                                    <div class="order">{{index<9?'0'+ (index+1):index+1}}</div>
+                                    <div class="txt-overflow">
+                                        <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
+                                            【{{item.classificationName}}】 {{item.bookName}}
+                                        </router-link>
+                                    </div>
+                                </li>
+                            </template>
+                            <li class="more"><router-link to="/rank/golden">查看更多　　<i class="el-icon-arrow-right"></i></router-link></li>
+                        </ul>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </div>
+
+        <!-- 榜单推荐 -->
+        <div class="ranking clear mt5">
+            <div class="main-left">
+            <div class="home-left-header rank">
+                <span class="home-left-title">分类推荐</span>
+                <a href="javascript:;" class="exchange" @click="exchange($event)">换一换</a>
+            </div>
+            <ul class="clear home-rank">
+                <li v-for="item in allData.bookBatch" class="classify-item clear">
+                <template v-for="(item2,$index2) in item">
+                    <div v-if="$index2===0" class="classify-sub-item" :key="$index2">
+                    <div class="item-subtitle clear">
+                        <router-link class="c-tle" :to="'/class_total/'+item2.bookClassificationId+'/0/0/0/0/1/0'">
+                        {{item2.recommendName.slice(item2.recommendName.lastIndexOf('-')+1)}}
+                        </router-link>
+                    </div>
+                    <div class="item-main clear">
+                        <router-link class="cover" :to="'/book/'+item2.bookId">
+                        <img :src="item2.bookImage" :alt="item2.bookName">
+                        </router-link>
+                        <div class="b-info">
+                        <div class="b-title">
+                            <router-link :to="'/book/'+item2.bookId" class="txt-overflow">
+                            {{item2.bookName}}
+                            </router-link>
+                            <p class="b-writer">作者：{{item2.writerName}}</p>
+                        </div>
+                        <p class="book-label">
+                            <span v-for="item3 in item2.booklableList" :style="{borderColor:item3.bookColor,color:item3.bookColor}">{{item3.bookLableName}}</span>
+                        </p>
+                        <p class="book-intro overLine3">
+                            {{item2.bookIntroduction}}
+                        </p>
+                        </div>
+                    </div>
+                    </div>
+                </template>
+                </li>
             </ul>
-          </div>
-        </div>
-        <div class="main-right clear">
-          <el-tabs type="card" activeName="first_one" class="home-tabs golden">
-            <el-tab-pane label="金椒榜" disabled></el-tab-pane>
-            <el-tab-pane label="月" name="first_one">
-              <ul  class="rank-list">
-                <template v-if="allData.jinJiaoTopMonthList" v-for="(item,index) in allData.jinJiaoTopMonthList">
-                  <li v-if="index===0">
-                    <router-link :to="'/book/'+item.bookId" class="cover">
-                      <img :src="item.bookImage" :alt="item.bookName">
-                    </router-link>
-                    <div class="info">
-                      <div class="b-title txt-overflow">
-                        <router-link :to="'/book/'+item.bookId">
-                          {{item.bookName}}
+            </div>
+            <div class="main-right">
+            <el-tabs type="card" activeName="first_four" class="home-tabs mb5">
+                <el-tab-pane label="畅销榜" name="first_four">
+                <ul class="rank-list">
+                    <template v-for="(item,$index) in allData.changXiaototal">
+                    <li v-if="$index===0">
+                        <router-link :to="'/book/'+item.bookId" class="cover">
+                        <img :src="item.bookImage" :alt="item.bookName">
                         </router-link>
-                      </div>
-                      <div class="b-writer txt-overflow">
-                        {{item.writerName}}
-                      </div>
-                      <div class="class-name">
-                        {{item.classificationName}}
-                      </div>
-                    </div>
-                  </li>
-                  <li v-else-if="index>0&&index<10">
-                    <div class="order">
-                      {{index<9?'0'+ (index+1):index+1}}
-                    </div>
-                    <div class="txt-overflow">
-                      <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
-                        【{{item.classificationName}}】 {{item.bookName}}
-                      </router-link>
-                    </div>
-                  </li>
-                </template>
-                <li class="more"><router-link to="/rank/golden">查看更多　　<i class="el-icon-arrow-right"></i></router-link></li>
-              </ul>
-            </el-tab-pane>
-            <el-tab-pane label="总" name="second_one">
-              <ul  class="rank-list">
-                <template v-if="allData.jinJiaoToptotalList" v-for="(item,index) in allData.jinJiaoToptotalList">
-                  <li v-if="index===0">
-                    <router-link :to="'/book/'+item.bookId" class="cover">
-                      <img :src="item.bookImage" :alt="item.bookName">
-                    </router-link>
-                    <div class="info">
-                      <div class="b-title txt-overflow">
-                        <router-link :to="'/book/'+item.bookId">
-                          {{item.bookName}}
+                        <div class="info">
+                        <div class="b-title txt-overflow">
+                            <router-link :to="'/book/'+item.bookId">
+                            {{item.bookName}}
+                            </router-link>
+                        </div>
+                        <div class="b-writer txt-overflow">
+                            {{item.writerName}}
+                        </div>
+                        <div class="class-name">
+                            {{item.classificationName}}
+                        </div>
+                        </div>
+                    </li>
+                    <li v-else-if="$index>0&&$index<10">
+                        <div class="order">
+                        {{$index<9?'0'+($index+1):($index+1)}}
+                        </div>
+                        <div class="txt-overflow">
+                        <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
+                            【{{item.classificationName}}】 {{item.bookName}}
                         </router-link>
-                      </div>
-                      <div class="b-writer txt-overflow">
-                        {{item.writerName}}
-                      </div>
-                      <div class="class-name">
-                        {{item.classificationName}}
-                      </div>
-                    </div>
-                  </li>
-                  <li v-else-if="index>0&&index<10">
-                    <div class="order">
-                      {{index<9?'0'+ (index+1):index+1}}
-                    </div>
-                    <div class="txt-overflow">
-                      <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
-                        【{{item.classificationName}}】 {{item.bookName}}
-                      </router-link>
-                    </div>
-                  </li>
-                </template>
-                <li class="more"><router-link to="/rank/golden">查看更多　　<i class="el-icon-arrow-right"></i></router-link></li>
-              </ul>
-            </el-tab-pane>
-          </el-tabs>
-
-        </div>
-      </div>
-      <!--新书推荐 end-->
-
-      <!--榜单推荐  start-->
-      <div class="ranking clear mt5">
-        <div class="main-left">
-          <div class="home-left-header rank">
-            <span class="home-left-title">分类推荐</span>
-            <a href="javascript:;" class="exchange" @click="exchange($event)">换一换</a>
-          </div>
-          <ul class="clear home-rank">
-            <li v-for="item in allData.bookBatch" class="classify-item clear">
-              <template v-if="allData.bookBatch" v-for="(item2,$index2) in item">
-                <div v-if="$index2===0" class="classify-sub-item">
-                  <div class="item-subtitle clear">
-                    <router-link class="c-tle" :to="'/class_total/'+item2.bookClassificationId+'/0/0/0/0/1/0'">
-                      {{item2.recommendName.slice(item2.recommendName.lastIndexOf('-')+1)}}
+                        </div>
+                    </li>
+                    </template>
+                    <li class="more">
+                    <router-link to="/rank/sell/">查看更多
+                        　　<i class="el-icon-arrow-right"></i>
                     </router-link>
-                  </div>
-                  <div class="item-main clear">
-                    <router-link class="cover" :to="'/book/'+item2.bookId">
-                      <img :src="item2.bookImage" :alt="item2.bookName">
-                    </router-link>
-                    <div class="b-info">
-                      <div class="b-title">
-                        <router-link :to="'/book/'+item2.bookId" class="txt-overflow">
-                          {{item2.bookName}}
+                    </li>
+                </ul>
+                </el-tab-pane>
+                <el-tab-pane label="点击榜" name="second_four">
+                <ul class="rank-list">
+                    <template v-for="(item,$index) in allData.dianJiBang">
+                    <li v-if="$index===0">
+                        <router-link :to="'/book/'+item.bookId" class="cover">
+                        <img :src="item.bookImage" :alt="item.bookName">
                         </router-link>
-                        <p class="b-writer">作者：{{item2.writerName}}</p>
-                      </div>
-                      <p class="book-label">
-                        <span v-for="item3 in item2.booklableList" :style="{borderColor:item3.bookColor,color:item3.bookColor}">{{item3.bookLableName}}</span>
-                      </p>
-                      <p class="book-intro overLine3">
-                        {{item2.bookIntroduction}}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </li>
-          </ul>
-        </div>
-        <div class="main-right">
-          <el-tabs type="card" activeName="first_four" class="home-tabs mb5">
-            <el-tab-pane label="畅销榜" name="first_four">
-              <ul class="rank-list">
-                <template v-if="allData.changXiaototal" v-for="(item,$index) in allData.changXiaototal">
-                  <li v-if="$index===0">
-                    <router-link :to="'/book/'+item.bookId" class="cover">
-                      <img :src="item.bookImage" :alt="item.bookName">
-                    </router-link>
-                    <div class="info">
-                      <div class="b-title txt-overflow">
-                        <router-link :to="'/book/'+item.bookId">
-                          {{item.bookName}}
+                        <div class="info">
+                        <div class="b-title txt-overflow">
+                            <router-link :to="'/book/'+item.bookId">
+                            {{item.bookName}}
+                            </router-link>
+                        </div>
+                        <div class="b-writer txt-overflow">
+                            {{item.writerName}}
+                        </div>
+                        <div class="class-name">
+                            {{item.classificationName}}
+                        </div>
+                        </div>
+                    </li>
+                    <li v-else-if="$index>0 && $index<10">
+                        <div class="order">
+                        {{$index<9?'0'+($index+1):($index+1)}}
+                        </div>
+                        <div class="txt-overflow">
+                        <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
+                            【{{item.classificationName}}】 {{item.bookName}}
                         </router-link>
-                      </div>
-                      <div class="b-writer txt-overflow">
-                        {{item.writerName}}
-                      </div>
-                      <div class="class-name">
-                        {{item.classificationName}}
-                      </div>
-                    </div>
-                  </li>
-                  <li v-else-if="$index>0&&$index<10">
-                    <div class="order">
-                      {{$index<9?'0'+($index+1):($index+1)}}
-                    </div>
-                    <div class="txt-overflow">
-                      <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
-                        【{{item.classificationName}}】 {{item.bookName}}
-                      </router-link>
-                    </div>
-                  </li>
-                </template>
-                <li class="more">
-                  <router-link to="/rank/sell/">查看更多
+                        </div>
+                    </li>
+                    </template>
+                    <li class="more">
+                    <router-link to="/rank/click">查看更多
                     　　<i class="el-icon-arrow-right"></i>
-                  </router-link>
-                </li>
-              </ul>
-            </el-tab-pane>
-            <el-tab-pane label="点击榜" name="second_four">
-              <ul class="rank-list">
-                <template v-if="allData.dianJiBang" v-for="(item,$index) in allData.dianJiBang">
-                  <li v-if="$index===0">
-                    <router-link :to="'/book/'+item.bookId" class="cover">
-                      <img :src="item.bookImage" :alt="item.bookName">
                     </router-link>
-                    <div class="info">
-                      <div class="b-title txt-overflow">
-                        <router-link :to="'/book/'+item.bookId">
-                          {{item.bookName}}
-                        </router-link>
-                      </div>
-                      <div class="b-writer txt-overflow">
-                        {{item.writerName}}
-                      </div>
-                      <div class="class-name">
-                        {{item.classificationName}}
-                      </div>
-                    </div>
-                  </li>
-                  <li v-else-if="$index>0 && $index<10">
-                    <div class="order">
-                     {{$index<9?'0'+($index+1):($index+1)}}
-                    </div>
-                    <div class="txt-overflow">
-                      <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
-                        【{{item.classificationName}}】 {{item.bookName}}
-                      </router-link>
-                    </div>
-                  </li>
-                </template>
-                <li class="more">
-                  <router-link to="/rank/click">查看更多
-                  　　<i class="el-icon-arrow-right"></i>
-                  </router-link>
-                </li>
-              </ul>
+                    </li>
+                </ul>
 
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-      </div>
-      <!--榜单推荐 end-->
-
-      <!--特别推荐位  begin-->
-      <div class="trends mt20 mb20" v-if="allData.activityRecommendedPositionList && allData.activityRecommendedPositionList[1] " >
-        <div class="trends-content br5">
-          <a target="_blank" :href="activeHref(1)">
-            <img  :src="allData.activityRecommendedPositionList[1].activityImgURL" alt="网站动态公告">
-          </a>
-        </div>
-
-      </div>
-      <!--特别推荐位 end-->
-
-      <!--最新更新 start-->
-      <div class="latest-book clear">
-        <div class="main-left">
-          <div class="heading latestIcon-bg">
-            <img src="../../assets/image/icon/latest_book2.png" alt="">
-            <div class="fl f-title ml10">
-              最近更新图书
-            </div>
-            <router-link class="fr more" to="class_total">查看更多 <i class="el-icon-arrow-right"></i></router-link>
-          </div>
-          <div class="latest-list">
-            <table class="book-list-table">
-              <tbody>
-              <tr>
-                <th width="52"><span class="code">序号</span></th>
-                <th width="100">小说类别</th>
-                <th width="246" class="tl" style="padding-left: 24px">书名/更新章节</th>
-                <th width="106">作者</th>
-                <th width="100">字数</th>
-                <th width="114">更新时间</th>
-              </tr>
-              <tr v-for="(item,index) in latestChapterList.maxNewChapterVOList" v-if="index<15">
-                <td><p class="code">{{index+1}}</p></td>
-                <td><p class="type">{{item.classificationName}}</p></td>
-                <td>
-                  <div class="name">
-                    <router-link class="txt-overflow" :to="'/book/'+item.bookId" >{{item.bookName}}</router-link>
-                    <p> <span  class="txt-overflow">{{item.lastUpdateChapterName}}</span><i v-if="item.bookCheckStatus==2" class="zdy-icon__vip"></i></p>
-                  </div>
-                </td>
-                <td><p class="words txt-overflow">{{item.writerName}}</p></td>
-                <td><p class="author">{{item.bookWorldCount}}</p></td>
-                <td><p class="time">{{item.lastUpdateTime | time('sort')}}</p></td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="main-right">
-            <div class="rank-list-wrap">
-              <div class="rank-list-title">
-                最新签约
-              </div>
-              <ul  class="rank-list ah">
-                <template v-if="latestChapterList.maxNewSignBook" v-for="(item,index) in latestChapterList.maxNewSignBook">
-                  <li v-if="index===0">
-                    <router-link :to="'/book/'+item.bookId" class="cover">
-                      <img :src="item.bookImage" :alt="item.bookName">
-                    </router-link>
-                    <div class="info">
-                      <div class="b-title txt-overflow">
-                        <router-link :to="'/book/'+item.bookId">
-                          {{item.bookName}}
-                        </router-link>
-                      </div>
-                      <div class="b-writer txt-overflow">
-                        {{item.writerName}}
-                      </div>
-                      <div class="class-name">
-                        {{item.classificationName}}
-                      </div>
-                    </div>
-                  </li>
-                  <li v-if="index<10 && index>0">
-                    <div class="order">
-                      {{index<9?'0'+ (index+1):index+1}}
-                    </div>
-                    <div class="txt-overflow">
-                      <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
-                        【{{item.classificationName}}】 {{item.bookName}}
-                      </router-link>
-                    </div>
-                  </li>
-                </template>
-              </ul>
-            </div>
-            <div class="rank-list-wrap">
-              <div class="rank-list-title">
-                最新入库
-              </div>
-              <ul  class="rank-list ah">
-                <template v-if="latestList.list" v-for="(item,index) in latestList.list">
-                  <li v-if="index===0">
-                    <router-link :to="'/book/'+item.bookId" class="cover">
-                      <img :src="item.bookImage" :alt="item.bookName">
-                    </router-link>
-                    <div class="info">
-                      <div class="b-title txt-overflow">
-                        <router-link :to="'/book/'+item.bookId">
-                          {{item.bookName}}
-                        </router-link>
-                      </div>
-                      <div class="b-writer txt-overflow">
-                        {{item.writerName}}
-                      </div>
-                      <div class="class-name">
-                        {{item.classificationName}}
-                      </div>
-                    </div>
-                  </li>
-                  <li v-if="index<10 && index>0">
-                    <div class="order">
-                      {{index<9?'0'+ (index+1):index+1}}
-                    </div>
-                    <div class="txt-overflow">
-                      <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
-                        【{{item.classificationName}}】 {{item.bookName}}
-                      </router-link>
-                    </div>
-                  </li>
-                </template>
-              </ul>
+                </el-tab-pane>
+            </el-tabs>
             </div>
         </div>
-      </div>
-      <!--最新更新 end-->
+
+        <!-- 特别推荐位 -->
+        <div class="trends mt20 mb20" v-if="allData.activityRecommendedPositionList && allData.activityRecommendedPositionList[1] " >
+            <div class="trends-content br5">
+            <a target="_blank" :href="activeHref(1)">
+                <img  :src="allData.activityRecommendedPositionList[1].activityImgURL" alt="网站动态公告">
+            </a>
+            </div>
+
+        </div>
+
+        <!-- 最新更新 -->
+        <div class="latest-book clear">
+            <div class="main-left">
+            <div class="heading latestIcon-bg">
+                <img src="../../assets/image/icon/latest_book2.png" alt="">
+                <div class="fl f-title ml10">最近更新图书</div>
+                <router-link class="fr more" to="class_total">查看更多 <i class="el-icon-arrow-right"></i></router-link>
+            </div>
+            <div class="latest-list">
+                <table class="book-list-table">
+                    <tbody>
+                        <tr>
+                            <th width="52"><span class="code">序号</span></th>
+                            <th width="100">小说类别</th>
+                            <th width="246" class="tl" style="padding-left: 24px">书名/更新章节</th>
+                            <th width="106">作者</th>
+                            <th width="100">字数</th>
+                            <th width="114">更新时间</th>
+                        </tr>
+                        <tr v-for="(item, index) in latestChapterList.maxNewChapterVOList" v-if="index<15" :key="index">
+                            <td><p class="code">{{index+1}}</p></td>
+                            <td><p class="type">{{item.classificationName}}</p></td>
+                            <td>
+                            <div class="name">
+                                <router-link class="txt-overflow" :to="'/book/'+item.bookId" >{{item.bookName}}</router-link>
+                                <p> <span  class="txt-overflow">{{item.lastUpdateChapterName}}</span><i v-if="item.bookCheckStatus==2" class="zdy-icon__vip"></i></p>
+                            </div>
+                            </td>
+                            <td><p class="words txt-overflow">{{item.writerName}}</p></td>
+                            <td><p class="author">{{item.bookWorldCount}}</p></td>
+                            <td><p class="time">{{item.lastUpdateTime | time('sort')}}</p></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+            <div class="main-right">
+                <div class="rank-list-wrap">
+                <div class="rank-list-title">
+                    最新签约
+                </div>
+                <ul  class="rank-list ah">
+                    <template v-for="(item,index) in latestChapterList.maxNewSignBook">
+                    <li v-if="index===0">
+                        <router-link :to="'/book/'+item.bookId" class="cover">
+                        <img :src="item.bookImage" :alt="item.bookName">
+                        </router-link>
+                        <div class="info">
+                        <div class="b-title txt-overflow">
+                            <router-link :to="'/book/'+item.bookId">
+                            {{item.bookName}}
+                            </router-link>
+                        </div>
+                        <div class="b-writer txt-overflow">
+                            {{item.writerName}}
+                        </div>
+                        <div class="class-name">
+                            {{item.classificationName}}
+                        </div>
+                        </div>
+                    </li>
+                    <li v-if="index<10 && index>0">
+                        <div class="order">
+                        {{index<9?'0'+ (index+1):index+1}}
+                        </div>
+                        <div class="txt-overflow">
+                        <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
+                            【{{item.classificationName}}】 {{item.bookName}}
+                        </router-link>
+                        </div>
+                    </li>
+                    </template>
+                </ul>
+                </div>
+                <div class="rank-list-wrap">
+                <div class="rank-list-title">
+                    最新入库
+                </div>
+                <ul  class="rank-list ah">
+                    <template v-for="(item,index) in latestList.list">
+                    <li v-if="index===0">
+                        <router-link :to="'/book/'+item.bookId" class="cover">
+                        <img :src="item.bookImage" :alt="item.bookName">
+                        </router-link>
+                        <div class="info">
+                        <div class="b-title txt-overflow">
+                            <router-link :to="'/book/'+item.bookId">
+                            {{item.bookName}}
+                            </router-link>
+                        </div>
+                        <div class="b-writer txt-overflow">
+                            {{item.writerName}}
+                        </div>
+                        <div class="class-name">
+                            {{item.classificationName}}
+                        </div>
+                        </div>
+                    </li>
+                    <li v-if="index<10 && index>0">
+                        <div class="order">
+                        {{index<9?'0'+ (index+1):index+1}}
+                        </div>
+                        <div class="txt-overflow">
+                        <router-link :to="'/book/'+item.bookId" :alt="item.bookName" :title="item.bookName">
+                            【{{item.classificationName}}】 {{item.bookName}}
+                        </router-link>
+                        </div>
+                    </li>
+                    </template>
+                </ul>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 </template>
 <script type="text/ecmascript-6">
-import { mapGetters,mapState } from 'vuex'
 export default{
-  data: function(){
-    return {
-      current:0,
-      timer:null,
-      hotRecommend:[], //首页热门推荐
-      autoNotice:[], //滚动网站公告
-      times:'',
-      updateData:[],
-      cState1:false,
-      cState2:false,
-    }
-  },
-  methods:{
-    exchange(event){
-        if(event.target.parentNode.className.indexOf('rank')>-1){
-            if(!this.cState1){
-                this.cState1 = true;
-                this.allData.bookBatch = this.allData.homePageRecommendedByClassFuction.slice(6);
-            }else {
-                this.cState1 = false;
-                this.allData.bookBatch = this.allData.homePageRecommendedByClassFuction.slice(0,6);
-            }
-        }else {
-            if(!this.cState2){
-                this.cState2 = true;
-                this.allData.newBook = this.allData.newBookRecommendedList.slice(10);
-            }else {
-                this.cState2 = false;
-                this.allData.newBook = this.allData.newBookRecommendedList.slice(0,10);
-            }
+    title(){
+        return '辣鸡小说-官方网站'
+    },
+
+    data() {
+        return {
+            // once: this.$store.state.once,
+            current:0,
+            timer:null,
+            hotRecommend:[], //首页热门推荐
+            autoNotice:[], //滚动网站公告
+            times:'',
+            updateData:[],
+            cState1:false,
+            cState2:false,
         }
     },
-    go() {
-        this.timer = setInterval(() => {
-            this.autoPlay()
-        },3000)
+
+    created(){
+        // if(!this.once){
+        this.$store.dispatch("FETCH_INDEX_DATA");
+        // }
+        this.$nextTick(()=>{
+            this.go()
+        })
     },
-    stop() {
-        clearInterval(this.timer);
-        this.timer = null
-    },
-    autoPlay(){
-      this.current++;
-      if(this.allData.gunDongDeng && this.current>this.allData.gunDongDeng.length-1){
-        this.current = 0;
-      }
-    },
-    activeHref (i) {
-      let href = this.allData.activityRecommendedPositionList;
-      if(href[i] && !href[i].showHide){
-        if(href[i].bookId){
-          return '/book/'+href[i].bookId
-        }else {
-          return href[i].detailsImgAndPageURL
+
+    methods:{
+        exchange(event){
+            if(event.target.parentNode.className.indexOf('rank')>-1){
+                if(!this.cState1){
+                    this.cState1 = true;
+                    this.allData.bookBatch = this.allData.homePageRecommendedByClassFuction.slice(6);
+                }else {
+                    this.cState1 = false;
+                    this.allData.bookBatch = this.allData.homePageRecommendedByClassFuction.slice(0,6);
+                }
+            }else {
+                if(!this.cState2){
+                    this.cState2 = true;
+                    this.allData.newBook = this.allData.newBookRecommendedList.slice(10);
+                }else {
+                    this.cState2 = false;
+                    this.allData.newBook = this.allData.newBookRecommendedList.slice(0,10);
+                }
+            }
+        },
+
+        go() {
+            this.timer = setInterval(() => {
+                this.current++
+                if(this.allData.gunDongDeng && this.current>this.allData.gunDongDeng.length-1){
+                    this.current = 0
+                }
+            },3000)
+        },
+
+        stop() {
+            clearInterval(this.timer)
+            this.timer = null
+        },
+        
+        activeHref (i) {
+            let href = this.allData.activityRecommendedPositionList;
+            if(href[i] && !href[i].showHide){
+                if(href[i].bookId){
+                return '/book/'+href[i].bookId
+                }else {
+                return href[i].detailsImgAndPageURL
+                }
+            }
+            return false
         }
-      }
-      return false
+    },
+  
+    computed:{
+        allData(){
+            return this.$store.getters.indexData("total")
+        },
+        latestChapterList(){
+            return this.$store.getters.indexData("latest")
+        },
+        latestList(){
+            return this.$store.getters.indexData("sign")
+        },
     }
-  },
-  title(){
-      return '辣鸡小说-官方网站'
-  },
-  asyncData ({ store }) {
-    return store.dispatch('FETCH_INDEX_DATA')
-  },
-  mounted(){
-    if(!this.once){
-      this.$store.dispatch("FETCH_INDEX_DATA");
-    }
-    this.$nextTick(()=>{
-       this.go();
-    })
-  },
-  computed:{
-    allData(){
-      return this.$store.getters.indexData("total")
-    },
-    latestChapterList(){
-      return this.$store.getters.indexData("latest")
-    },
-    latestList(){
-      return this.$store.getters.indexData("sign")
-    },
-    ...mapState([
-        'once'
-    ])
-  }
 }
 </script>
+
 <style lang="stylus" type="text/stylus" rel="stylesheet/stylus">
   font-color = #FB5E6F
   btn-color =  #F77583

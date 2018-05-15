@@ -189,7 +189,7 @@
 
 <script type="text/ecmascript-6">
   import Comment from '../comment/zxy-comment.vue'
-  import { FetchGetUserData } from '../../api'
+  import * as service from '../../api/service'
   export default{
       components:{
           'zxy-comment':Comment
@@ -236,34 +236,34 @@
           },1000);
         },
         getDataList(){
-            FetchGetUserData(1,'follow').then(json=>{
+            service.FetchGetUserData(1,'follow').then(json=>{
               if(json.returnCode===200 || !json.data){
                 this.attentionList = json.data
               }
             });
   
-          FetchGetUserData(1,'fans').then(json=>{
+          service.FetchGetUserData(1,'fans').then(json=>{
             if(json.returnCode===200 || !json.data){
               this.fansList = json.data
             }
           });
   
-          FetchGetUserData(1,'reLog',this.$cookie('user_id')).then(json=>{
+          service.FetchGetUserData(1,'reLog',this.$cookie('user_id')).then(json=>{
             this.recordList = json.data
           });
   
-          FetchGetUserData(1,'com',this.$cookie('user_id')).then(json=>{
+          service.FetchGetUserData(1,'com',this.$cookie('user_id')).then(json=>{
             if(json.returnCode===200){
               this.commentList = json.data
             }
           });
   
-          FetchGetUserData(1,'notice').then(json=>{
+          service.FetchGetUserData(1,'notice').then(json=>{
             if(json.returnCode===200){
               this.infoList = json.data
             }
           });
-          FetchGetUserData(1,'letter').then(json=>{
+          service.FetchGetUserData(1,'letter').then(json=>{
             if(json.returnCode===200 || !json.data){
               this.letterList = json.data
             }
@@ -271,7 +271,7 @@
         },
 //        获取签到状态
         getSignState(){
-            FetchGetUserData().then(json=>{
+            service.FetchGetUserData().then(json=>{
               if(json.returnCode===200){
                   this.signState = true
               }else {
@@ -283,7 +283,7 @@
         addSignState(){
           this.dialogVisible = true;
           if(!this.signState){
-              FetchGetUserData(0,'sign').then(json=>{
+              service.FetchGetUserData(0,'sign').then(json=>{
                 if(json.returnCode===200){
                   this.signState = true;
                   this.dialogVisible = true;

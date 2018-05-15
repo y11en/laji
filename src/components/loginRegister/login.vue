@@ -26,7 +26,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { FetchUserLogin } from '../../api'
+import md5 from 'md5'
+  import * as service from '../../api/service'
     export default{
       data() {
         let validatePass = (rule, value, callback) => {
@@ -63,14 +64,14 @@
             if (valid) {
               let subData = JSON.parse(JSON.stringify(this.loginList));
               subData.isSave = subData.isSave?1:0;
-              subData.userPassword = this.$md5(subData.userPassword);
-              FetchUserLogin(subData).then(res=>{
+              subData.userPassword = md5(subData.userPassword);
+               service.FetchUserLogin(subData).then(res=>{
                   if(res.returnCode===200){
                     this.$store.commit("SET_USER_INFO", res.data);
                     this.$cookie('user_id', res.data.userId);
                     this.$message({message:'登录成功',type:'success',duration:1500});
                     setTimeout(() => {
-                      if(this.$route.query.redirect!==undefined){
+                        if(this.$route.query.redirect!==undefined){
                         this.$router.push({path:this.$route.query.redirect})
                       }else {
                         this.$router.push({path:'/index'})
