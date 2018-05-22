@@ -99,7 +99,8 @@ export default{
             icon_url: '',
             pre_width: 0,
             zoom: 1,
-            ready: false
+            ready: false,
+            dataFrom: null
         }
     },
 
@@ -112,7 +113,8 @@ export default{
                 let fileData = file.files[0]
                 let size = fileData.size   //注意，这里读到的是字节数
                 let reader = new FileReader()
-                    console.log(reader)
+                    console.log(1,reader)
+                    this.dataFrom = reader.result
                 reader.onload = function (e) {
                     let data = e.target.result
                     //加载图片获取图片真实宽度和高度
@@ -193,7 +195,7 @@ export default{
                 //ajax 提交form
                 $.ajax({
                     url : this.action,
-                    type : "POST",
+                    type : "post",
                     data : formData,
                     dataType:"text",
                     xhrFields: {withCredentials: true},
@@ -334,7 +336,8 @@ export default{
         },
 
         cancel(){
-            this.$emit('close', true)
+
+            this.$emit('close', {data:{size: this.dataFrom, bookid: this.data}, close: false})
         },
 
         syncUrl(url){

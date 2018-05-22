@@ -6,14 +6,14 @@
 
         <section>
             <div class="contain">
-                <h1>主题介绍</h1>
+                <h1 id="A">主题介绍</h1>
 
                 <p>新站新气象，为了鼓励更多的喜爱文字创作的朋友讲出心中的故事，也为了让我们辣鸡这个“小世界”的故事更加的丰富多彩，现在我们向全网征集优秀的原创故事！</p>
                 <p>勇敢的少年，快来创造奇迹！</p>
 
-                <h1>征集范围</h1>
+                <h1 id="B">征集范围</h1>
 
-                <p class="title">幻想都市篇</p>
+                <p id="b1" class="title">幻想都市篇</p>
 
                 <p>平行都市系列</p>
                 <p class="text">
@@ -72,7 +72,7 @@
                 <p class="text">例文：《少女航线》，《我妖重新做人》，《神盾局的新晋职员》，《混在漫威当剑仙》  ，《仙王的日常生活》，《我修的可能是假仙》</p>
 
                 
-                <p class="title">幻想异界篇</p>
+                <p id="b2" class="title">幻想异界篇</p>
 
                 <p>异界店铺系列</p>
                 <p class="text">
@@ -118,7 +118,7 @@
                 <p class="text">例文：《轮回乐园》《我，型月，漫画家》《型月的根源人偶师》《将我的节操作为祭品献上》《次元论坛》《无限绅士》《无限世界的套路基本法》</p>
 
 
-                <p class="title">幻想次元篇</p>
+                <p id="b3" class="title">幻想次元篇</p>
 
                 <p>同人系列</p>
                 <p class="text">
@@ -133,7 +133,7 @@
                 <p class="text">例文：《火影之最强震遁》，《海贼之火龙咆哮》，《龙珠之武天宗师》，《神级剑魂系统》，《一拳之最强英雄》，《名侦探世界里的巫师》</p>
 
 
-                <p class="title">腐女的幻想世界篇</p>
+                <p id="b4" class="title">腐女的幻想世界篇</p>
 
                 <p>ABO系列</p>
                 <p class="text">
@@ -166,7 +166,7 @@
                 <p class="text">例文：《我不要生小孩儿》</p>
 
 
-                <h1>作品要求</h1>
+                <h1 id="C">作品要求</h1>
 
                 <p>1.深脑洞，欢乐向，疯吐槽，梗玩年！</p>
                 <p class="text">
@@ -179,28 +179,28 @@
                 <p>3.作品必须内容积极向上，不得违反国家政策法规，不得抄袭复制，不得涉政涉黄涉黑，不得侮辱民族宗教信仰极其生活习俗，违者取消资格并承担相应后果。</p>
 
 
-                <h1>作品奖励</h1>
+                <h1 id="D">作品奖励</h1>
                 
                 <p>1.全勤调整为：日更3000字奖励600元，一个月最多可使用3次请假卡。</p>
                 <p>2.获得网站的优先推广、推荐的权利。</p>
                 <p>3.获得有声小说、漫画、出版、影视的优先推荐权。</p>
 
-                <h1>参加流程</h1>
+                <h1 id="E">参加流程</h1>
 
                 <p>作品需要先签约辣鸡小说，然后由责编来进行评选，符合征文要求即可享受征文奖励。</p>
             </div>
 
             <div class="nav">
                 <img src="../assets/image/icon/creation-icon.png" alt="">
-                <h1 :class="{active: 817.272705078125 <= screenHeight && screenHeight < 1090}" @click="jump(817.272705078125)">主题介绍</h1>
-                <h1 :class="{active: 1090 <= screenHeight && screenHeight < 4290.9091796875}" @click="jump(1090)">征集范围</h1>
-                <p :class="{active: 1090 <= screenHeight && screenHeight < 2536}" @click="jump(1090)">幻想都市篇</p>
-                <p :class="{active: 2536 <= screenHeight && screenHeight < 3545.45458984375}" @click="jump(2545.45458984375)">幻想异界篇</p>
-                <p :class="{active: 3545.45458984375 <= screenHeight && screenHeight < 3909.0908203125}" @click="jump(3545.45458984375)">幻想次元篇</p>
-                <p :class="{active: 3909.0908203125 <= screenHeight && screenHeight < 4290.9091796875}" @click="jump(3909.0908203125)">腐女的幻想世界篇</p>
-                <h1 :class="{active: screenHeight >= 4290.9091796875}" @click="jump(4290.9091796875)">作品要求</h1>
-                <h1 @click="jump(4290.9091796875)">作品奖励</h1>
-                <h1 @click="jump(4290.9091796875)">参加流程</h1>
+                <a href="#A" class="title" :class="{active: 619 <= screenHeight && screenHeight < 803}">主题介绍</a>
+                <a href="#B" class="title" :class="{active: 803 <= screenHeight && screenHeight < 4298}">征集范围</a>
+                <a href="#b1" :class="{active: 875 <= screenHeight && screenHeight < 2639}">幻想都市篇</a>
+                <a href="#b2" :class="{active: 2639 <= screenHeight && screenHeight < 3843}">幻想异界篇</a>
+                <a href="#b3" :class="{active: 3843 <= screenHeight && screenHeight < 4255}">幻想次元篇</a>
+                <a href="#b4" :class="{active: 4255 <= screenHeight && screenHeight < 4744}">腐女的幻想世界篇</a>
+                <a href="#C" class="title" :class="{active: screenHeight >= 4744}">作品要求</a>
+                <a href="#D" class="title">作品奖励</a>
+                <a href="#E" class="title">参加流程</a>
             </div>
         </section>
     </div>
@@ -221,7 +221,8 @@ export default {
 
     methods: {
         menu() {
-            this.screenHeight = document.documentElement.scrollTop || document.body.scrollTop;
+            this.screenHeight = document.documentElement.scrollTop || document.body.scrollTop
+            // console.log(this.screenHeight)
         },
 
         jump(val) {
@@ -278,10 +279,13 @@ export default {
                 top -54px
                 left 50%
                 transform translateX(-50%)
-            h1, p
-                cursor pointer
+            a
+                display block
                 height 25px
                 line-height 25px
+            .title
+                font-size 18px
+                font-weight bold
             .active
                 display block
                 box-shadow none

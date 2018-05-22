@@ -33,7 +33,7 @@
             <el-col class="line" :span="5">
                 <el-select v-model="bookInfo.bookClassificationId" :disabled="$route.name === 'EditBook'" placeholder="请选择活动区域">
                     <template v-for="(item, index) in classList">
-                        <el-option :selected="bookInfo.bookClassificationId===item.id" :value="String(item.id)" :label="'－'+item.classificationName+'－'" ></el-option>
+                        <el-option :selected="bookInfo.bookClassificationId===item.id" :value="String(item.id)" :label="'－'+item.classificationName+'－'" :key="index"></el-option>
                     </template>
                 </el-select>
             </el-col>
@@ -124,6 +124,7 @@
 <script type="text/ecmascript-6">
 import Vue from 'vue'
 import * as service from '../../api/service'
+import ax from 'axios'
 export default{
 
     components:{
@@ -303,7 +304,7 @@ export default{
                 // 如果是修改信息，请求书籍信息
                 if(this.$route.name==='EditBook'){
                     service.FetchGetBookInfo(this.$route.params.bid, 'book').then(json2=>{
-                        console.log(json2)
+                        // console.log(json2)
                         if(json2.returnCode===200){
                             let arr = []
                             json2.data.bookLabId.split(",").map((item) => {
@@ -332,7 +333,7 @@ export default{
             this.dialogTableVisible = true
         },
 
-        closeIt(){
+        closeIt(data){
             this.dialogTableVisible = false
         }
 

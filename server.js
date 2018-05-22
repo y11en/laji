@@ -141,7 +141,7 @@ const httpsServer = https.createServer(credentials, app).listen(SSLPORT, functio
   console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
 });
 
-// http.createServer(app, credentials).listen(80)
+// http.createServer(app, credentials).listen(8084)
 
 app.get("*",render)
 // app.get('*', isProd ? render : (req, res) => {

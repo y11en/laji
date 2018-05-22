@@ -241,8 +241,13 @@ import * as service from '../../api/service'
             this.$refs['ChapterForm'].validate((valid) => {
                 if (valid) {
                     if(type==='draft'){
-                        this.ruleForm.whetherPublic = 1
-                        this.createChapter()
+                        if(this.isAutoPublish){
+                            this.$loading().close()
+                            this.$message({ message: '草稿箱内容无法定时发布！', type: 'warning' });
+                        }else{
+                            this.ruleForm.whetherPublic = 1
+                            this.createChapter()
+                        }
                     }else if(this.ruleForm.chapterIsvip) {
                         this.$nextTick(()=>{
                             this.$loading().close()

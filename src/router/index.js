@@ -1,73 +1,64 @@
-/**
- * Created by Administrator on 2017/7/20.
- */
-
 import Vue from 'vue'
 import Router from 'vue-router'
-import Axios from 'axios'
-import VueAxios from 'vue-axios'
-const Home = () => import("../components/home/home.vue");
-const authorIndex =() => import('../components/author/index.vue');
-const Detail =() => import('../components/book/detail.vue');
-const Rank =() => import('../components/ranking/rank.vue');
-const rankLoading =() => import('../components/ranking/rankLoading.vue');
-const Total =() => import('../components/classify/total.vue');
-const Welfare =() => import('../components/author/welfare.vue');
-const Charge  =() => import('../components/charge/index.vue');
-const Error =() => import('../components/error/404.vue');
-const Search =() => import('../components/classify/search.vue');
-const Chapter =() => import('../components/book/chapter.vue');
-const ChapterList =() => import('../components/book/chapter_list.vue');
-const Login =() => import('../components/loginRegister/login.vue');
-const getBackPassword =() => import('../components/loginRegister/getBackPassword.vue');
-const totalLoading =() => import('../components/classify/totalLoading.vue');
 
+Vue.use(Router)
+Vue.config.productionTip = false
 
-const authorCenter =() => import('../components/author/center.vue');
-const Register =() => import('../components/loginRegister/register.vue');
-const addBook =() => import('../components/author/addBook.vue');
-const addChapter =() => import('../components/author/addChapter.vue');
-const editChapter =() => import('../components/author/eidtChapter.vue');
-const authorChapterList =() => import('../components/author/chapterList.vue');
-const draftList =() => import('../components/author/draftList.vue');
-const Income =() => import('../components/author/income.vue');
-const authorMessage =() => import('../components/author/message.vue');
-const authorNotice =() => import('../components/author/notice.vue');
-const authorApply =() => import('../components/author/apply.vue');
-const authorTidings =() => import('../components/author/tidings.vue');
+const Home = () => import("../components/home/home.vue")
+const authorIndex = () => import('../components/author/index.vue')
+const Detail = () => import('../components/book/detail.vue')
+const Rank = () => import('../components/ranking/rank.vue')
+const rankLoading = () => import('../components/ranking/rankLoading.vue')
+const Total = () => import('../components/classify/total.vue')
+const Welfare = () => import('../components/author/welfare.vue')
+const Charge  = () => import('../components/charge/index.vue')
+const Error = () => import('../components/error/404.vue')
+const Search = () => import('../components/classify/search.vue')
+const Chapter = () => import('../components/book/chapter.vue')
+const ChapterList = () => import('../components/book/chapter_list.vue')
+const Login = () => import('../components/loginRegister/login.vue')
+const getBackPassword = () => import('../components/loginRegister/getBackPassword.vue')
+const totalLoading = () => import('../components/classify/totalLoading.vue')
 
+const authorCenter = () => import('../components/author/center.vue')
+const Register = () => import('../components/loginRegister/register.vue')
+const addBook = () => import('../components/author/addBook.vue')
+const addChapter = () => import('../components/author/addChapter.vue')
+const editChapter = () => import('../components/author/eidtChapter.vue')
+const authorChapterList = () => import('../components/author/chapterList.vue')
+const draftList = () => import('../components/author/draftList.vue')
+const Income = () => import('../components/author/income.vue')
+const authorMessage = () => import('../components/author/message.vue')
+const authorNotice = () => import('../components/author/notice.vue')
+const authorApply = () => import('../components/author/apply.vue')
+const authorTidings = () => import('../components/author/tidings.vue')
 
-const userIndex =() => import('../components/user/index.vue');
-const userCenter =() => import('../components/user/center.vue');
-const userMessage =() => import('../components/user/message.vue');
-const userComment =() => import('../components/user/comment.vue');
-const userChat =() => import('../components/user/chat.vue');
-const userFans =() => import('../components/user/fans.vue');
-const userShelf =() => import('../components/user/shelf.vue');
-const userAttention =() => import('../components/user/attention.vue');
-const userWallet =() => import('../components/user/wallet.vue');
-const userPersonal =() => import('../components/user/personal.vue');
-const commonNews =() => import('../components/common/news.vue');
-const Download =() => import('../components/common/download.vue');
+const userIndex = () => import('../components/user/index.vue')
+const userCenter = () => import('../components/user/center.vue')
+const userMessage = () => import('../components/user/message.vue')
+const userComment = () => import('../components/user/comment.vue')
+const userChat = () => import('../components/user/chat.vue')
+const userFans = () => import('../components/user/fans.vue')
+const userShelf = () => import('../components/user/shelf.vue')
+const userAttention = () => import('../components/user/attention.vue')
+const userWallet = () => import('../components/user/wallet.vue')
+const userPersonal = () => import('../components/user/personal.vue')
+const commonNews = () => import('../components/common/news.vue')
+const Download = () => import('../components/common/download.vue')
 
+const readerIndex = () => import('../components/reader/index.vue')
+const readerFans = () => import('../components/reader/fans.vue')
+const readerCenter = () => import('../components/reader/center.vue')
+const readerAttention = () => import('../components/reader/attention.vue')
 
-const readerIndex =() => import('../components/reader/index.vue');
-const readerFans =() => import('../components/reader/fans.vue');
-const readerCenter =() => import('../components/reader/center.vue');
-const readerAttention =() => import('../components/reader/attention.vue');
+const readerShelf = () => import('../components/reader/bookshelf.vue')
+const readerSpit = () => import('../components/reader/spit_slot.vue')
+const readerReview = () => import('../components/reader/book_review.vue')
 
-const readerShelf =() => import('../components/reader/bookshelf.vue');
-const readerSpit =() => import('../components/reader/spit_slot.vue');
-const readerReview =() => import('../components/reader/book_review.vue');
+const solicit = () => import('../components/solicit.vue')
 
-const solicit =() => import('../components/solicit.vue');
-
-
-// Vue.prototype.$ajax= Axios;
-Vue.use(Router,VueAxios,Axios);
-Vue.config.productionTip = false;
 const routes = [
-//   { path:"*", component: Error },
+  { path:"*", component: Error },
   { path:'/error/404', component:Error },
 
   { path: '/index', name: 'index', meta:{title:'辣鸡小说'}, component: Home },
@@ -265,15 +256,14 @@ const routes = [
   { path:'/download/app', name:'download', component:Download },
   { path: '/', redirect:'/index' },
   { path: '/solicit', name: 'solicit', component: solicit }
-];
+]
 
-
-export function createRouter () {
-  return new Router({
-    mode: 'history',
-    fallback: false,
-    scrollBehavior: () => ({ y: 0 }),
-    routes,
-    linkActiveClass:'active'
-  })
+export function createRouter() {
+    return new Router({
+        mode: 'history',
+        fallback: false,
+        scrollBehavior: () => ({ y: 0 }),
+        routes,
+        linkActiveClass:'active'
+    })
 }
