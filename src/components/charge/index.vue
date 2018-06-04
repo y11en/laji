@@ -54,9 +54,7 @@
             <p class="warmTip">充值每满20元赠送1金椒</p>
           </el-form-item>
           <el-form-item class="lastOne">
-            <button type="button" class="btn sub" @click="submitForm('chargeFormRef')">
-              下一步
-            </button>
+                <button type="button" class="btn sub" @click="submitForm('chargeFormRef')">下一步</button>
           </el-form-item>
         </el-form>
       </div>
@@ -102,98 +100,98 @@
 
 <script type="text/ecmascript-6">
 import QRcode from 'qrcode'
-import { FetchWebPay } from '../../api'
+import service from '../../api/index.js'
 import { mapState } from 'vuex'
 export default{
-  data(){
-      return {
-          dialogVisible:false,
-          chargeForm:{
-              type:'alipay',
-              number:'30'
-          },
-          rule:{
-              type:[
-                {require:true,message:'请选取支付方式',trigger:'blur'}
-              ],
-              number:[
-                {require:true,message:'请选取充值金额',trigger:'blur'}
-              ]
-          },
-          isWeiXin:false,
-          tipInfo:'',
-          alipayHref:''
-      }
-  },
-  methods:{
-    submitForm(formName){
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-            this.$myLoad();
-            FetchWebPay(this.chargeForm.type,this.$store.state.userInfo.pseudonym,this.chargeForm.number).then(json=>{
-                this.$nextTick(()=>{
-                    this.$loading().close();
-                    if(json.returnCode===200){
-                        if(this.chargeForm.type==='weixin'){
-                            this.isWeiXin = true;
-                            setTimeout(()=>{
-                                let canvas = document.getElementById('WxpayCanvas');
-                                QRcode.toCanvas(canvas,json.data.code_url,{
-                                    errorCorrectionLevel:'H',
-                                    scale:16,
-                                    height:300,
-                                    width:300
-                                },function(err) {
-                                    console.log(err)
-                                });
-                            },200);
-                        }else {
-                            this.alipayHref = json.data;
-                            this.dialogVisible = true;
-                        }
-                    }
-                });
+    data(){
+        return {
+            dialogVisible:false,
+            chargeForm:{
+                type:'alipay',
+                number:'30'
+            },
+            rule:{
+                type:[
+                    {require:true,message:'请选取支付方式',trigger:'blur'}
+                ],
+                number:[
+                    {require:true,message:'请选取充值金额',trigger:'blur'}
+                ]
+            },
+            isWeiXin:false,
+            tipInfo:'',
+            alipayHref:''
+        }
+    },
+    methods:{
+        submitForm(formName){
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.$myLoad();
+                    service.FetchWebPay(this.chargeForm.type,this.$store.state.userInfo.pseudonym,this.chargeForm.number).then(json=>{
+                        this.$nextTick(()=>{
+                            this.$loading().close();
+                            if(json.returnCode===200){
+                                if(this.chargeForm.type==='weixin'){
+                                    this.isWeiXin = true;
+                                    setTimeout(()=>{
+                                        let canvas = document.getElementById('WxpayCanvas');
+                                        QRcode.toCanvas(canvas,json.data.code_url,{
+                                            errorCorrectionLevel:'H',
+                                            scale:16,
+                                            height:300,
+                                            width:300
+                                        },function(err) {
+                                            console.log(err)
+                                        });
+                                    },200);
+                                }else {
+                                    this.alipayHref = json.data;
+                                    this.dialogVisible = true;
+                                }
+                            }
+                        });
+                    });
+                }
+            })
+        },
+        payBack(type){
+            this.isWeiXin = false;
+            if(type==='suc'){
+                this.$store.dispatch("FETCH_FRESHEN_INFO");
+                this.$router.push({path:'/user/index'})
+            }
+        },
+        payTo(){
+            this.dialogVisible = false;
+            this.$confirm('如果支付完成后，刷新页面辣椒无变化请联系网站下客服QQ','支付确认提示', {
+                confirmButtonText: '支付完成',
+                cancelButtonText: '重新支付',
+                closeOnClickModal:false,
+                type: 'info'
+            }).then(() => {
+                this.payBack('suc')
+            }).catch(() => {
+                this.$store.dispatch("FETCH_FRESHEN_INFO")
             });
         }
-      })
     },
-    payBack(type){
-       this.isWeiXin = false;
-       if(type==='suc'){
-           this.$store.dispatch("FETCH_FRESHEN_INFO");
-           this.$router.push({path:'/user/index'})
-       }
+    watch:{
+        'isWeiXin':function () {
+            if(this.isWeiXin){
+                document.body.style.paddingLeft = '17px';
+                document.body.style.overflow = 'hidden';
+            }else {
+                document.body.style.paddingLeft = null;
+                document.body.style.overflow = null;
+            }
+        }
     },
-    payTo(){
-      this.dialogVisible = false;
-      this.$confirm('如果支付完成后，刷新页面辣椒无变化请联系网站下客服QQ','支付确认提示', {
-          confirmButtonText: '支付完成',
-          cancelButtonText: '重新支付',
-          closeOnClickModal:false,
-          type: 'info'
-        }).then(() => {
-          this.payBack('suc')
-        }).catch(() => {
-          this.$store.dispatch("FETCH_FRESHEN_INFO")
-        });
+    computed:{
+        ...mapState([
+            'userInfo'
+        ])
     }
-  },
-  watch:{
-    'isWeiXin':function () {
-      if(this.isWeiXin){
-        document.body.style.paddingLeft = '17px';
-        document.body.style.overflow = 'hidden';
-      }else {
-        document.body.style.paddingLeft = null;
-        document.body.style.overflow = null;
-      }
-    }
-  },
-  computed:{
-      ...mapState([
-          'userInfo'
-      ])
-  }
 }
 
 </script>

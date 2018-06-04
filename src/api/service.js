@@ -1,11 +1,12 @@
 import ax from './axios'
 import * as Fun from './fun'
 
-
-export function checkLoginState() {
+// 检查 用户是否登录
+export function FetchCheckLoginState() {
     return ax.post('/person-checkLoginState')
             .then(res => res.data)
 }
+
 
 // 获取网络时间
 export function FetchNetTime() {
@@ -25,7 +26,7 @@ export function FetchIndexLatest () {
 }
 // 首页最新签约
 export function FetchIndexSign() {
-    return ax.post("/stacks-bookFiltering", {type:4,page:1})
+    return ax.post("/stacks-bookFiltering", {order: 4, page: 1})
             .then(res => res.data)
 }
 
@@ -158,7 +159,7 @@ export function FetchAuthorWelfare() {
 }
 
 // 登录
-export function FetchUserLogin(data,tip=true) {
+export function FetchUserLogin(data) {
     return ax.post("/person-login", data)
             .then(res => res.data)
 }
@@ -620,11 +621,6 @@ export function FetchWebNotice(id) {
             .then(res => res.data)
 }
 
-export function FetchCheckLoginState() {
-    return ax.post('/person-checkLoginState')
-            .then(res => res.data)
-}
-
 export function FetchApplicantAuthor(data) {
     return ax.post('/person-applicantAuthor', data)
             .then(res => res.data)
@@ -652,5 +648,17 @@ export function FetchSendmessage(data) {
 
 export function FetchUpdatemessage(data) {
     return ax.post('/person-updatemessage', data)
+            .then(res => res.data)
+}
+
+// 头像上传
+export function FetchUserAvatarimgUpload(data) {
+    return ax.post('/sys-UserAvatarimgUpload', data)
+            .then(res => res.data)
+}
+
+// 封面上传
+export function FetchBookCoverAvatarimgUpload(data) {
+    return ax.post('/sys-BookCoverAvatarimgUpload', data)
             .then(res => res.data)
 }

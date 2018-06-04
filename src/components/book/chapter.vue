@@ -6,8 +6,12 @@
         <div class="sub-nav">
           <el-breadcrumb class="chapter-detail"  separator-class="el-icon-arrow-right" :style="{color:intercalate[setData.theme].bgColor2}">
             <el-breadcrumb-item :style="{color:'#747474'}" :to="{ path: '/' }">主页</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{path:'/class_total/'+bookInfo.bookClassificationId+'/0/0/0/0/1/0'}" >{{bookInfo.classificationName}}</el-breadcrumb-item>
-            <el-breadcrumb-item :to="'/book/'+bookInfo.bookId">{{chapterInfo.bookTitle}}</el-breadcrumb-item>
+            <el-breadcrumb-item>
+                <router-link :to="{path:'/class_total/'+bookInfo.bookClassificationId+'/0/0/0/0/1/0'}">{{bookInfo.classificationName}}</router-link>
+            </el-breadcrumb-item>
+            <el-breadcrumb-item>
+                <router-link :to="'/book/'+chapterInfo.bookId" style="cursor:pointer;">{{chapterInfo.bookTitle}}</router-link>
+            </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </div>

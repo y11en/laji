@@ -108,14 +108,13 @@
     <cropper
         v-if="ready"
         ref="bookCoverUpdate"
-        action="https://www.lajixs.com/api/sys-BookCoverAvatarimgUpload"
+        type="cover"
         :visible.sync="dialogTableVisible"
-        :sync="true"
         @syncUrl="setCover"
         @close="closeIt"
         :maxWidth="600"
         :data="{ bookid: bookId }"
-        :url = "bookInfo.bookImage"
+        url="/static/img/defaultavatarimg.jpg"
         :aspectRatio="3/4">
     </cropper>
 </div>
@@ -124,7 +123,6 @@
 <script type="text/ecmascript-6">
 import Vue from 'vue'
 import * as service from '../../api/service'
-import ax from 'axios'
 export default{
 
     components:{

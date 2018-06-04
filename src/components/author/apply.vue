@@ -469,5 +469,5 @@
       font-size 14px
 .el-year-table td.current .cell:hover
 .el-month-table td.current .cell:hover
-  color #fff!important
+  color #fff
 </style>

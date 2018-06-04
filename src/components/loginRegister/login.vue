@@ -1,100 +1,112 @@
 <template>
     <div class="wrapper login-wrapper clear">
-      <div class="lr-top clear">
-        <span class="fix-line"></span><span class="lr-title">登录</span><span class="fix-line"></span>
-      </div>
-      <div class="form-wrapper clear">
-        <div class="loginIcon"></div>
-        <el-form :model="loginList" :rules="rules" ref="loginRuleForm" class="login-ruleForm">
-          <el-form-item prop="userName">
-            <el-input type="text" placeholder="请输入手机号或昵称" v-model="loginList.userName" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item  prop="userPassword">
-            <el-input type="password" placeholder="请输入密码" @keyup.enter.native="submitForm('loginRuleForm')" v-model="loginList.userPassword" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item  prop="isSave">
-            <el-checkbox v-model="loginList.isSave">下次自动登录</el-checkbox>
-            <router-link class="fr main-color" :to="$route.query.redirect?'/find_page?redirect='+$route.query.redirect:'/find_page?redirect=/index'">忘记密码</router-link>
-          </el-form-item>
-          <el-form-item>
-            <el-button class="form-submit-btn" type="primary" @click="submitForm('loginRuleForm')">登录</el-button>
-            <router-link :to="$route.query.redirect?'/register?redirect='+$route.query.redirect:'/register?redirect=/index'" class="fr"><el-button>注册</el-button></router-link>
-          </el-form-item>
-        </el-form>
-      </div>
+        <div class="lr-top clear">
+            <span class="fix-line"></span>
+            <span class="lr-title">登录</span>
+            <span class="fix-line"></span>
+        </div>
+        <div class="form-wrapper clear">
+            <div class="loginIcon"></div>
+            <el-form :model="loginList" :rules="rules" ref="loginRuleForm" class="login-ruleForm">
+                <el-form-item prop="userName">
+                    <el-input type="text" placeholder="请输入手机号或昵称" v-model="loginList.userName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item  prop="userPassword">
+                    <el-input type="password" placeholder="请输入密码" @keyup.enter.native="submitForm('loginRuleForm')" v-model="loginList.userPassword" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item  prop="isSave">
+                    <el-checkbox v-model="loginList.isSave">下次自动登录</el-checkbox>
+                    <router-link class="fr main-color" :to="$route.query.redirect?'/find_page?redirect='+$route.query.redirect:'/find_page?redirect=/index'">忘记密码</router-link>
+                </el-form-item>
+                <el-form-item>
+                    <el-button class="form-submit-btn" type="primary" @click="submitForm('loginRuleForm')">登录</el-button>
+                    <router-link :to="$route.query.redirect?'/register?redirect='+$route.query.redirect:'/register?redirect=/index'" class="fr"><el-button>注册</el-button></router-link>
+                </el-form-item>
+            </el-form>
+        </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
 import md5 from 'md5'
-  import * as service from '../../api/service'
-    export default{
-      data() {
+import * as service from '../../api/service'
+export default{
+    data() {
         let validatePass = (rule, value, callback) => {
-          if (value === '') {
-            callback(new Error('请输入密码'));
-          } else {
-            if (!/[a-zA-Z\d_]{5,17}/.test(value)) {
-              callback(new Error('正确格式为：长度在6-18之间，只能包含字符、数字和下划线。 '));
-            }else {
-              callback()
-            }
-          }
-        };
-        return {
-          loginList:{
-            userName:"",
-            userPassword:'',
-            isSave:0,
-            terminal:4
-          },
-          rules: {
-            userName: [
-              { required: true, message:'请输入账号', trigger: 'blur' }
-            ],
-            userPassword: [
-              { required: true, validator:validatePass, trigger: 'blur' }
-            ]
-          }
-        };
-      },
-      methods: {
-        submitForm(formName) {
-          this.$refs[formName].validate((valid) => {
-            if (valid) {
-              let subData = JSON.parse(JSON.stringify(this.loginList));
-              subData.isSave = subData.isSave?1:0;
-              subData.userPassword = md5(subData.userPassword);
-               service.FetchUserLogin(subData).then(res=>{
-                  if(res.returnCode===200){
-                    this.$store.commit("SET_USER_INFO", res.data);
-                    this.$cookie('user_id', res.data.userId);
-                    this.$message({message:'登录成功',type:'success',duration:1500});
-                    setTimeout(() => {
-                        if(this.$route.query.redirect!==undefined){
-                        this.$router.push({path:this.$route.query.redirect})
-                      }else {
-                        this.$router.push({path:'/index'})
-                      }
-                    },1500)
-                  }
-              });
+            if (value === '') {
+                callback(new Error('请输入密码'))
             } else {
-              return false;
+                if (!/[a-zA-Z\d_]{5,17}/.test(value)) {
+                    callback(new Error('正确格式为：长度在6-18之间，只能包含字符、数字和下划线。 '))
+                }else {
+                    callback()
+                }
             }
-          });
+        }
+        return {
+            loginList:{
+                userName: '',
+                userPassword: '',
+                isSave: null,
+                terminal: 4
+            },
+            rules: {
+                userName: [
+                    { required: true, message:'请输入账号', trigger: 'blur' }
+                ],
+                userPassword: [
+                    { required: true, validator:validatePass, trigger: 'blur' }
+                ]
+            }
+        }
+    },
+    methods: {
+        setCookie(key, value, iDay) {
+            var oDate = new Date();
+            oDate.setDate(oDate.getDate() + iDay);
+            document.cookie = key + '=' + value + ';expires=' + oDate;
+
+        },
+
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    let subData = JSON.parse(JSON.stringify(this.loginList))
+                    subData.isSave = subData.isSave ? 7 : null
+                    subData.userPassword = md5(subData.userPassword)
+                    this.$store.dispatch('fetchUserLogin', subData).then(res => {
+                        if(res.returnCode === 200){
+                            this.$store.commit('SET_USER_INFO', res.data)
+                            this.$cookie('user_id', res.data.userId)
+                            this.$message({message:'登录成功',type:'success',duration:1500})
+                            setTimeout(() => {
+                                if(this.$route.query.redirect!==undefined){
+                                    this.$router.push({path:this.$route.query.redirect})
+                                }else {
+                                    this.$router.push({path:'/index'})
+                                }
+                            },1500)
+                        }else {
+                            this.$message({message:'账号或密码错误！',type:'error'})
+                            this.loginList.userPassword = ''
+                        }
+                    })
+                } else {
+                    return false
+                }
+            })
         },
         getCode(){
-          this.$message({
-            message:'数据不全',
-            type: 'warning',
-            duration:0
-          })
+            this.$message({
+                message:'数据不全',
+                type: 'warning',
+                duration:0
+            })
         }
-      },
-    }
-
+    },
+}
 </script>
+
 <style lang="stylus" type="text/stylus" rel="stylesheet/stylus">
 .login-wrapper
   width :860px

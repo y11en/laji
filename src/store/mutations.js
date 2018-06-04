@@ -4,6 +4,56 @@
 import Vue from 'vue'
 
 export default {
+    // cookie
+    Cookie(key,value,expiredays,path,domain){
+        // try{
+          if(typeof value !== "undefined"){//write
+            let cookieValue = key + "=" + encodeURIComponent(value);
+            if(expiredays){
+              let exdate = new Date();
+              exdate.setDate(exdate.getDate()+expiredays);
+              cookieValue += ";expires="+exdate.toGMTString()
+            }
+            cookieValue += ";path=" + (path?path:'/');
+            if(domain){
+              cookieValue += ";domain=" + domain
+            }
+            document.cookie = cookieValue;
+          }else{//read
+            if ( document.cookie.length>0) {
+              var cookie = {}, all =  document.cookie, list, item, index;
+              if (all === '') {
+                return cookie;
+              }
+              list = all.split('; ');
+              for (var i = 0, len = list.length; i < len; i++) {
+                item = list[i];
+                index = item.indexOf('=');
+                var cookieNow;
+                try {
+                  cookieNow = decodeURIComponent(item.substring(index + 1));
+                } catch (e) {
+                  cookieNow = item.substring(index + 1);
+                }
+                cookie[item.substring(0, index)] = cookieNow;
+              }
+              return cookie[key];
+            }else {
+              return null
+            }
+          }
+        // }catch (err){
+        //   return null
+        // }
+    },
+
+
+
+
+
+
+
+
   SET_LOADING(state,data){
       state.loading = data
   },

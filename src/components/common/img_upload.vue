@@ -33,7 +33,7 @@
                         <span>选取图片</span>
                     </label>
             </form>
-            <button class="el-button el-button--primary" @click="subForm">{{sync ? '确定' : '上传'}}</button>
+            <button class="el-button el-button--primary" @click="subForm">{{type === 'cover' ? '确定' : '上传'}}</button>
         </div>
     </div>
 </div>
@@ -46,7 +46,7 @@ import '../../assets/css/jquery.Jcrop.min.css'
 export default{
     name:'cropper',
     props:{
-        action:{
+        type:{
             default:''
         },
         aspectRatio:{
@@ -81,10 +81,6 @@ export default{
         }
     },
 
-    mounted: function() {
-        // console.log(this.url)
-    },
-    
     data(){
         return {
             img_url: this.url,
@@ -113,8 +109,7 @@ export default{
                 let fileData = file.files[0]
                 let size = fileData.size   //注意，这里读到的是字节数
                 let reader = new FileReader()
-                    console.log(1,reader)
-                    this.dataFrom = reader.result
+                this.dataFrom = reader.result
                 reader.onload = function (e) {
                     let data = e.target.result
                     //加载图片获取图片真实宽度和高度
@@ -181,52 +176,49 @@ export default{
                 if(this.icon_url===''){
                     return callback({returnCode:200})
                 }
-                var formData = new FormData()   //这里连带form里的其他参数也一起提交了,如果不需要提交其他参数可以直接FormData无参数的构造函数
-                //convertBase64UrlToBlob函数是将base64编码转换为Blob
-                //append函数的第一个参数是后台获取数据的参数名,和html标签的input的name属性功能相同
+                let formData = new FormData()
+
                 var blob = this.dataURLtoBlob(this.icon_url)
                 formData.append('file',blob,'avatar-image.png')
-                    for(let k in this.data){
-                        formData.append(k,this.data[k])
-                    }
+
+                for(let k in this.data){
+                    formData.append(k,this.data[k])
+                }
+
                 if(!this.sync){
                     this.$myLoad('正在上传中...')
                 }
-                //ajax 提交form
-                $.ajax({
-                    url : this.action,
-                    type : "post",
-                    data : formData,
-                    dataType:"text",
-                    xhrFields: {withCredentials: true},
-                    crossDomain: true,
-                    processData : false,         // 告诉jQuery不要去处理发送的数据
-                    contentType : false,        // 告诉jQuery不要去设置Content-Type请求头
-                    success:(data)=>{
-                        if(!this.sync){
-                            this.cancel()
-                            this.$nextTick(()=>{
-                                this.$loading().close()
-                            })
-                            this.$message(JSON.parse(data).msg)
-                            this.$store.dispatch("FETCH_FRESHEN_INFO")
-                        }else {
-                            callback(JSON.parse(data))
+
+                if(this.type == 'head'){
+                    this.$store.dispatch('FetchUserAvatarimgUpload', formData).then(res => {
+                        if(res.returnCode === 200) {
+                            if(!this.sync){
+                                this.cancel()
+                                this.$nextTick(()=>{
+                                    this.$loading().close()
+                                })
+                                this.$message(res.msg)
+                                this.$store.dispatch("FETCH_FRESHEN_INFO")
+                            }else {
+                                this.$message('上传失败，请刷新重试！')
+                            }
                         }
-                    },
-                    error:()=>{
-                        this.$nextTick(()=>{
-                            this.$loading().close()
-                        })
-                    },
-                    xhr: function(){            //在jquery函数中直接使用ajax的XMLHttpRequest对象
-                        var xhr = new XMLHttpRequest()
-                        xhr.upload.addEventListener("progress", function(evt){
-                            if (evt.lengthComputable) {}
-                        }, false)
-                        return xhr
-                    }
-                })
+                    })
+                }else if(this.type == 'cover') {
+                    this.$store.dispatch('FetchBookCoverAvatarimgUpload', formData).then(res => {
+                        if(res.returnCode === 200) {
+                            if(!this.sync){
+                                this.cancel()
+                                this.$nextTick(()=>{
+                                    this.$loading().close()
+                                })
+                                this.$message(res.msg)
+                            }else {
+                                this.$message('上传失败，请刷新重试！')
+                            }
+                        }
+                    })
+                }
             }else {
                 this.$message({message:'无法获取剪切数据，请重新尝试！',type:'warning'})
             }

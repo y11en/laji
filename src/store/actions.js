@@ -6,6 +6,27 @@ import { Message, MessageBox } from 'element-ui'
 const $alert = MessageBox.alert
 
 export default {
+
+    // 用户登录
+    async fetchUserLogin({commit}, data){
+        const res = await service.FetchUserLogin(data).catch(err => console.error(err))
+        return res
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // 网站首页数据
   FETCH_INDEX_DATA:({commit})=>{
    return service.FetchIndexData().then(data=>{
@@ -23,12 +44,6 @@ export default {
    })
 
   },
-
-
-  checkLoginState: () => {
-    return service.checkLoginState()
-          .then(res => res.data)
-},
 
   // 网站排行榜数据获取
   FETCH_RANK_DATA:({commit},{type,page})=>{
@@ -333,5 +348,19 @@ FETCH_USER_MESSAGE:({ commit })=>{
     FetchUpdatemessage: ({}, data) => {
         const res = service.FetchUpdatemessage(data)
         return res
-    }
+    },
+
+    FetchUserAvatarimgUpload: ({}, data) => {
+        const res = service.FetchUserAvatarimgUpload(data)
+        return res
+    },
+
+    /**
+     * 封面上传
+     */
+    FetchBookCoverAvatarimgUpload: ({}, data) => {
+        const res = service.FetchBookCoverAvatarimgUpload(data)
+        return res
+    },
+
 }

@@ -26,6 +26,7 @@ export default {
 
     mounted() {
         this.$router.beforeEach((to,from,next)=>{
+            console.log(1)
             let uid = Number(this.$cookie('user_id'))
             if(to.name==='Login' && uid){
                 next({ path: '/index' })

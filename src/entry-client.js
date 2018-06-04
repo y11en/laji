@@ -59,17 +59,3 @@ router.onReady(() => {
   // actually mount to DOM
   app.$mount('#app')
 });
-
-// service worker
-// if ('serviceWorker' in navigator) {
-//     navigator.serviceWorker.register('/dist/service-worker.js').then(function(registration) {
-//     // Registration was successful
-//     console.log('ServiceWorker registration successful with scope: ',    registration.scope);
-//   }).catch(function(err) {
-//     // registration failed :(
-//     console.error('ServiceWorker registration failed: ', err);
-//   });
-// }
-// if ('https:' === location.protocol && navigator.serviceWorker) {
-//   navigator.serviceWorker.register('/service-worker.js')
-// }

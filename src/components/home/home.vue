@@ -46,11 +46,11 @@
         </div>
 
         <!-- 广告位 -->
-        <div class="trends">
+        <div class="trends mt20 mb20" v-if="allData.activityRecommendedPositionList && allData.activityRecommendedPositionList[0] ">
             <div class="trends-content br5">
-                <router-link to="/solicit#fromapp" target="_blank">
-                    <img src="../../../static/img/solicit/Bitmap.png" alt="网站动态公告">
-                </router-link>
+                <a target="_blank" :href="activeHref(0)">
+                    <img  :src="allData.activityRecommendedPositionList[0].activityImgURL" alt="网站动态公告">
+                </a>
             </div>
         </div>
 
@@ -306,7 +306,7 @@
         </div>
 
         <!-- 特别推荐位 -->
-        <div class="trends mt20 mb20" v-if="allData.activityRecommendedPositionList && allData.activityRecommendedPositionList[1] " >
+        <div class="trends mt20 mb20" v-if="allData.activityRecommendedPositionList && allData.activityRecommendedPositionList[1]">
             <div class="trends-content br5">
                 <a target="_blank" :href="activeHref(1)">
                     <img  :src="allData.activityRecommendedPositionList[1].activityImgURL" alt="网站动态公告">
@@ -334,7 +334,7 @@
                                 <th width="100">字数</th>
                                 <th width="114">更新时间</th>
                             </tr>
-                            <tr v-for="(item, index) in latestChapterList.maxNewChapterVOList" v-if="index<15" :key="index">
+                            <tr v-for="(item, index) in latestChapterList.maxNewChapterVOList" v-if="index<13" :key="index">
                                 <td><p class="code">{{index+1}}</p></td>
                                 <td><p class="type">{{item.classificationName}}</p></td>
                                 <td>
