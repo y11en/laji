@@ -33,6 +33,7 @@ exports.install = function (Vue, options) {
             method:type,
             url:child,
             baseURL:'http://www.lajixs.com',
+            // baseURL:'http://192.168.0.136:8081',
             data:data,
             headers:{
               "Content-Type":"application/x-www-form-urlencoded"
@@ -190,7 +191,7 @@ exports.install = function (Vue, options) {
             exdate.setDate(exdate.getDate()+expiredays);
             cookieValue += ";expires="+exdate.toGMTString()
           }
-          cookieValue += ";path=" + (path?path:'/');
+          cookieValue += ";path=" + (path || '/');
           if(domain){
             cookieValue += ";domain=" + domain
           }

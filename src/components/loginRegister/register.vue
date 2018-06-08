@@ -114,7 +114,8 @@ import md5 from 'md5'
           userSex:'',
           userAge:'',
           userPhone:'',
-          code:''
+          code:'',
+          terminal: 0
         },
         timer:null,
         limit:60,

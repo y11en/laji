@@ -48,7 +48,8 @@ export default{
                 userName: '',
                 userPassword: '',
                 isSave: null,
-                terminal: 4
+                terminal: 4,
+                userCode: 'LG20180608000P'
             },
             rules: {
                 userName: [

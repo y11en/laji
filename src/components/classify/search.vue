@@ -110,7 +110,7 @@
         getData(){
           service.FetchGetBookInfo({
             keyWord:this.$route.params.keywords,
-            startupPage:this.$route.params.page,
+            startPage:this.$route.params.page,
             isHotWorld:1
           },'search').then(json=>{
             this.searchList = {};
